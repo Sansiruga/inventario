@@ -40,7 +40,7 @@ const KEY="invrep_v1";
 const DEF={tpls:[],recs:{},rtypes:["Error de sistema de facturación","Error de caja","Falla de equipo","Otro"],reps:[],lastBackup:"",snooze:""};
 let S;try{S=JSON.parse(localStorage.getItem(KEY))||null}catch(e){S=null}
 S=Object.assign(JSON.parse(JSON.stringify(DEF)),S||{});
-let V={tab:"inv",tpl:null,modal:null,draft:{type:"",photo:"",desc:"",equipo:""}};
+let V={filter:"",tab:"inv",tpl:null,modal:null,draft:{type:"",photo:"",desc:"",equipo:""}};
 const $=s=>document.querySelector(s);
 const h=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const uid=()=>Math.random().toString(36).slice(2,9);
@@ -90,8 +90,11 @@ function vList(){
   (rows.length?rows.map((r,i)=>`<div class="card">${t.fields.map(f=>`<div class="kv"><span class="mu">${h(f.n)}</span><b>${h(r[f.id])}</b></div>`).join("")}<div class="row" style="margin-top:10px"><button class="s" data-a="edrec" data-id="${r._id}">Editar</button><button class="s d" data-a="delrec" data-id="${r._id}">Borrar</button></div></div>`).join(""):`<div class="card mu">Sin registros todavía.</div>`)+
   `<div class="row" style="margin-top:14px"><button class="s d" data-a="deltpl">Borrar esta lista</button></div>`;
 }
+function filt(){
+  const ts=[...new Set([...S.rtypes,...S.reps.map(r=>r.type)])];
+  return `<select data-a="filt" style="margin-bottom:6px"><option value="">Todos los tipos (${S.reps.length})</option>${ts.map(t=>`<option value="${h(t)}" ${V.filter===t?"selected":""}>${h(t)} (${S.reps.filter(r=>r.type===t).length})</option>`).join("")}</select>`}
 function vRep(){
-  const d=V.draft;
+  const d=V.draft,R=S.reps.filter(r=>!V.filter||r.type===V.filter);
   return `<h1>Reportes</h1><div class="card">
   <label>Tipo de reporte</label><select data-d="type">${S.rtypes.map(t=>`<option ${d.type===t?"selected":""}>${h(t)}</option>`).join("")}</select>
   <label>Foto del error</label><input type="file" accept="image/*" data-a="photo">${d.photo?`<img class="ph" src="${d.photo}">`:""}
@@ -99,7 +102,7 @@ function vRep(){
   <label>Descripción</label><textarea data-d="desc" placeholder="¿Qué está pasando?">${h(d.desc)}</textarea>
   <div class="row" style="margin-top:12px"><button class="p sp" data-a="share">Compartir por WhatsApp</button><button data-a="copy">Copiar texto</button></div>
   <div class="row" style="margin-top:8px"><button class="s" data-a="saverep">Guardar en historial</button><button class="s d" data-a="clrdraft">Limpiar</button></div></div>
-  <h2>Historial</h2>`+(S.reps.length?S.reps.slice().reverse().map(r=>`<div class="card"><b>${h(r.type)}</b><div class="mu">${h(r.date)}${r.equipo?" · "+h(r.equipo):""}</div><div>${h(r.desc)}</div>${r.photo?`<img class="ph" src="${r.photo}">`:""}<div class="row" style="margin-top:8px"><button class="s" data-a="resend" data-id="${r.id}">Reenviar</button><button class="s d" data-a="delrep" data-id="${r.id}">Borrar</button></div></div>`).join(""):`<div class="mu">Aún no hay reportes guardados.</div>`);
+  <h2>Historial</h2>`+filt()+(R.length?R.slice().reverse().map(r=>`<div class="card"><b>${h(r.type)}</b><div class="mu">${h(r.date)}${r.equipo?" · "+h(r.equipo):""}</div><div>${h(r.desc)}</div>${r.photo?`<img class="ph" src="${r.photo}">`:""}<div class="row" style="margin-top:8px"><button class="s" data-a="resend" data-id="${r.id}">Reenviar</button><button class="s d" data-a="delrep" data-id="${r.id}">Borrar</button></div></div>`).join(""):`<div class="mu">${S.reps.length?"No hay reportes de este tipo.":"Aún no hay reportes guardados."}</div>`);
 }
 function vCfg(){
   return `<h1>Ajustes</h1><div class="card"><b>Tipos de reporte</b><div class="mu" style="margin:4px 0 8px">Toca uno para borrarlo.</div>${S.rtypes.map((t,i)=>`<span class="chip" data-a="deltype" data-i="${i}">${h(t)} ✕</span>`).join("")}<div class="row"><input class="sp" id="nt" placeholder="Nuevo tipo de reporte"><button data-a="addtype">Agregar</button></div></div>
@@ -176,12 +179,13 @@ document.addEventListener("input",e=>{
 });
 document.addEventListener("change",async e=>{
   const t=e.target,a=t.dataset.a;
+  if(a==="filt"){V.filter=t.value;render();return}
   if(a==="photo"&&t.files[0]){V.draft.photo=await resize(t.files[0]);render()}
   if(a==="impfile"&&t.files[0]){importCfg(await t.files[0].text())}
   if(a==="restorefile"&&t.files[0]){restoreAll(await t.files[0].text());t.value=""}
 });
 document.addEventListener("click",async e=>{
-  const el=e.target.closest("[data-a]");if(!el||el.tagName==="INPUT")return;
+  const el=e.target.closest("[data-a]");if(!el||el.tagName==="INPUT"||el.tagName==="SELECT")return;
   const a=el.dataset.a,id=el.dataset.id,m=V.modal,t=S.tpls.find(x=>x.id===V.tpl);
   if(a==="tab"){V.tab=el.dataset.k;V.tpl=null;V.modal=null}
   else if(a==="open")V.tpl=id;

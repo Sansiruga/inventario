@@ -1,4 +1,4 @@
-const C="invrep-v2",XL="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js";
+const C="invrep-v3",XL="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js";
 const FILES=["./","index.html","manifest.webmanifest","icon-192.png","icon-512.png"];
 self.addEventListener("install",e=>{e.waitUntil((async()=>{
   const c=await caches.open(C);await c.addAll(FILES);
