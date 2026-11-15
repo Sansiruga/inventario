@@ -1,7 +1,7 @@
-const C="invrep-v3",XL="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js";
+const C="invrep-v4",XL="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js";
 const FILES=["./","index.html","manifest.webmanifest","icon-192.png","icon-512.png"];
 self.addEventListener("install",e=>{e.waitUntil((async()=>{
-  const c=await caches.open(C);await c.addAll(FILES);
+  const c=await caches.open(C);await Promise.all(FILES.map(async f=>c.put(f,await fetch(f,{cache:"reload"}))));
   try{await c.put(XL,await fetch(XL,{mode:"no-cors"}))}catch(x){}
   self.skipWaiting()})())});
 self.addEventListener("activate",e=>{e.waitUntil((async()=>{
