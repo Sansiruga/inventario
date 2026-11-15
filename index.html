@@ -3,69 +3,82 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Inventario y Reportes</title>
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#0f766e">
+<meta name="theme-color" content="#0f1115">
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="icon" href="icon-192.png">
 <style>
-:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#f6f7f9;--card:#fff;--tx:#1b1f24;--mu:#667085;--ac:#0f766e;--acx:#fff;--bd:#dfe3e8;--dg:#b42318;color-scheme:light}
-@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14171a;--card:#1e2329;--tx:#eceff2;--mu:#9aa4af;--ac:#2dd4bf;--acx:#06201c;--bd:#323941;--dg:#f97066;color-scheme:dark}}
-:root[data-theme="dark"]{--bg:#14171a;--card:#1e2329;--tx:#eceff2;--mu:#9aa4af;--ac:#2dd4bf;--acx:#06201c;--bd:#323941;--dg:#f97066;color-scheme:dark}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#f4f7fc;--card:#fff;--tx:#1b1f24;--mu:#5b6677;--ac:#1d4ed8;--acx:#fff;--bd:#d9e0ea;--dg:#b42318;color-scheme:light}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1115;--card:#1a1d23;--tx:#e6e8ec;--mu:#9aa3af;--ac:#60a5fa;--acx:#08121f;--bd:#2a2f38;--dg:#f87171;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f1115;--card:#1a1d23;--tx:#e6e8ec;--mu:#9aa3af;--ac:#60a5fa;--acx:#08121f;--bd:#2a2f38;--dg:#f87171;color-scheme:dark}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding-bottom:76px}
 main{max-width:720px;margin:0 auto;padding:16px}
 h1{font-size:22px;margin:4px 0 14px}h2{font-size:17px;margin:18px 0 8px}
-.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:14px;margin-bottom:10px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:16px;margin-bottom:12px}
 .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.sp{flex:1}
 .mu{color:var(--mu);font-size:14px}
-button{font:inherit;border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:10px;padding:10px 14px;cursor:pointer}
+button{font:inherit;border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:14px;padding:14px 18px;min-height:50px;cursor:pointer}
 button.p{background:var(--ac);color:var(--acx);border-color:var(--ac);font-weight:600}
-button.d{color:var(--dg)}button.s{padding:6px 10px;font-size:14px}
-input,select,textarea{font:inherit;width:100%;padding:10px;border:1px solid var(--bd);border-radius:10px;background:var(--bg);color:var(--tx)}
+button.d{color:var(--dg)}button.s{padding:10px 14px;min-height:42px;font-size:14px}
+input,select,textarea{font:inherit;width:100%;padding:13px;border:1px solid var(--bd);border-radius:12px;background:var(--bg);color:var(--tx)}
 textarea{min-height:90px}label{display:block;font-size:14px;color:var(--mu);margin:10px 0 4px}
 nav{position:fixed;left:0;right:0;bottom:0;display:flex;background:var(--card);border-top:1px solid var(--bd);padding-bottom:env(safe-area-inset-bottom,0px)}
-nav button{flex:1;border:0;border-radius:0;padding:14px 4px;background:none;color:var(--mu)}
+nav button{flex:1;border:0;border-radius:0;padding:18px 4px;background:none;color:var(--mu)}
 nav button.on{color:var(--ac);font-weight:700}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:flex-end;justify-content:center;z-index:20}
 .sheet{background:var(--bg);width:100%;max-width:720px;max-height:92%;overflow:auto;border-radius:18px 18px 0 0;padding:16px}
 .kv{display:flex;justify-content:space-between;gap:10px;padding:3px 0;border-bottom:1px dashed var(--bd)}.kv b{font-weight:600;text-align:right}
-.chip{display:inline-block;border:1px solid var(--bd);border-radius:99px;padding:5px 11px;margin:0 6px 6px 0;font-size:14px;background:var(--card);cursor:pointer}
+.chip{display:inline-block;border:1px solid var(--bd);border-radius:99px;padding:9px 14px;margin:0 8px 8px 0;font-size:14px;background:var(--card);cursor:pointer}
 #toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:10px 16px;border-radius:10px;z-index:30;display:none;max-width:90%}
+.ver{position:fixed;top:calc(env(safe-area-inset-top,0px) + 4px);right:8px;font-size:11px;color:var(--mu);opacity:.7;pointer-events:none;z-index:5}
 img.ph{max-width:100%;max-height:220px;border-radius:10px;margin-top:8px}
 </style></head><body>
-<main id="app"></main><nav id="nav"></nav><div id="toast"></div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<div class="ver" id="ver"></div><main id="app"></main><nav id="nav"></nav><div id="toast"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
 <script>
+const VERSION="1.4.0";
+const LOG=[["1.4.0","Tema oscuro grafito, colores por sede, botones más grandes y Excel azul"],["1.3.1","Confirmaciones dentro de la app (arregla borrar) y Excel con diseño"],["1.3.0","Grupos (sedes), atajos editables y Excel por grupo"],["1.2.2","Se muestra la versión en la esquina"],["1.2.1","Corrección para que las actualizaciones se carguen"],["1.2.0","Filtro de reportes por tipo"],["1.1.0","Combinar respaldos y recordatorio semanal"],["1.0.0","Inventarios, reportes y exportar a Excel"]];
 const KEY="invrep_v1";
-const DEF={tpls:[],recs:{},rtypes:["Error de sistema de facturación","Error de caja","Falla de equipo","Otro"],reps:[],lastBackup:"",snooze:""};
+const DEF={tpls:[],recs:{},rtypes:["Error de sistema de facturación","Error de caja","Falla de equipo","Otro"],reps:[],groups:[],presets:null,theme:"dark",lastBackup:"",snooze:""};
 let S;try{S=JSON.parse(localStorage.getItem(KEY))||null}catch(e){S=null}
 S=Object.assign(JSON.parse(JSON.stringify(DEF)),S||{});
-let V={filter:"",tab:"inv",tpl:null,modal:null,draft:{type:"",photo:"",desc:"",equipo:""}};
+let V={grp:null,filter:"",tab:"inv",tpl:null,modal:null,draft:{type:"",photo:"",desc:"",equipo:""}};
 const $=s=>document.querySelector(s);
 const h=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const uid=()=>Math.random().toString(36).slice(2,9);
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S));return true}catch(e){toast("No hay espacio para guardar (¿muchas fotos?)");return false}}
 function toast(m){const t=$("#toast");t.textContent=m;t.style.display="block";clearTimeout(toast.t);toast.t=setTimeout(()=>t.style.display="none",2600)}
 const PRESETS={"Computadoras":["Nombre","Marca","Procesador","RAM","Almacenamiento","Ubicación"],"Teléfonos":["Nombre","Marca","Modelo","RAM","Almacenamiento","Número"],"Toner":["Marca","Compatibilidad","Color","Cantidad"]};
+if(!Array.isArray(S.presets))S.presets=Object.keys(PRESETS).map(k=>({id:"p_"+k,name:k,fields:PRESETS[k].map(n=>({n,t:"text",o:""}))}));
 
 function dl(filename,data){
   const u=URL.createObjectURL(data),a=document.createElement("a");
   a.href=u;a.download=filename;document.body.appendChild(a);a.click();a.remove();
   setTimeout(()=>URL.revokeObjectURL(u),4000);toast("Descargando "+filename);
 }
-function exportXlsx(t){
-  const rows=S.recs[t.id]||[];
-  const aoa=[t.fields.map(f=>f.n),...rows.map(r=>t.fields.map(f=>r[f.id]??""))];
-  if(window.XLSX){
-    const ws=XLSX.utils.aoa_to_sheet(aoa),wb=XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb,ws,t.name.slice(0,30).replace(/[\\\/?*\[\]:]/g,"")||"Lista");
-    const out=XLSX.write(wb,{type:"array",bookType:"xlsx"});
-    dl(t.name+".xlsx",new Blob([out],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}));
-  }else{
-    const csv="\ufeff"+aoa.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(",")).join("\n");
-    dl(t.name+".csv",new Blob([csv],{type:"text/csv"}));
-  }
+async function xl(lists,filename){
+  if(!window.ExcelJS){
+    if(lists.length===1){const csv="\ufeff"+aoaOf(lists[0]).map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(",")).join("\n");dl(filename.replace(/\.xlsx$/,".csv"),new Blob([csv],{type:"text/csv"}))}
+    else toast("El Excel con diseño no está disponible ahora; abre la app con internet una vez");
+    return}
+  const wb=new ExcelJS.Workbook(),used=new Set(),bd={style:"thin",color:{argb:"FFBFC5CC"}};
+  lists.forEach(t=>{
+    const A=aoaOf(t),gg=S.groups.find(g=>g.id===t.gid),ws=wb.addWorksheet(sheetName(t.name,used),{views:[{state:"frozen",ySplit:1}],properties:gg&&gg.color?{tabColor:{argb:"FF"+gg.color.slice(1)}}:{}});
+    ws.addRows(A);
+    A[0].forEach((_,i)=>{ws.getColumn(i+1).width=Math.min(45,Math.max(12,...A.map(r=>String(r[i]??"").length+3)))});
+    ws.autoFilter={from:{row:1,column:1},to:{row:1,column:A[0].length}};
+    ws.getRow(1).height=24;
+    ws.eachRow((row,n)=>row.eachCell(c=>{
+      c.border={top:bd,left:bd,bottom:bd,right:bd};
+      c.alignment={vertical:"middle",wrapText:true};
+      if(n===1){c.font={bold:true,color:{argb:"FFFFFFFF"}};c.fill={type:"pattern",pattern:"solid",fgColor:{argb:"FF1F4E79"}};c.alignment={vertical:"middle",horizontal:"center",wrapText:true}}
+      else if(n%2===1)c.fill={type:"pattern",pattern:"solid",fgColor:{argb:"FFEAF1F8"}};
+    }));
+  });
+  try{dl(filename,new Blob([await wb.xlsx.writeBuffer()],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}))}catch(e){toast("No se pudo crear el Excel")}
 }
+const exportXlsx=t=>xl([t],gname(t)+t.name+".xlsx");
 
 const ymd=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")};
 function due(){
@@ -78,10 +91,35 @@ function banner(){return due()?`<div class="card" style="border-color:var(--ac)"
 function doBackup(){dl("respaldo-"+ymd()+".json",new Blob([JSON.stringify({app:"invrep",...S})],{type:"application/json"}));S.lastBackup=ymd();save()}
 function render(){
   $("#nav").innerHTML=[["inv","📦 Inventarios"],["rep","📝 Reportes"],["cfg","⚙️ Ajustes"]].map(([k,l])=>`<button class="${V.tab===k?"on":""}" data-a="tab" data-k="${k}">${l}</button>`).join("");
-  $("#app").innerHTML=banner()+(V.tab==="inv"?(V.tpl?vList():vInv()):V.tab==="rep"?vRep():vCfg())+(V.modal?vModal():"");
+  $("#app").innerHTML=banner()+(V.tab==="inv"?vInv():V.tab==="rep"?vRep():vCfg())+(V.modal?vModal():"");
 }
+function applyTheme(){const t=S.theme||"dark",r=document.documentElement;if(t==="auto")r.removeAttribute("data-theme");else r.setAttribute("data-theme",t)}
+const ask=(msg,fn)=>{V.modal={k:"cf",msg,fn}};
+const gl=g=>S.tpls.filter(t=>g==="none"?!t.gid:t.gid===g);
+const gname=t=>{const g=S.groups.find(x=>x.id===t.gid);return g?g.name+" - ":""};
+const aoaOf=t=>[t.fields.map(f=>f.n),...(S.recs[t.id]||[]).map(r=>t.fields.map(f=>r[f.id]??""))];
+const PAL=["#3B82F6","#22C55E","#F97316","#EF4444","#A855F7","#EAB308","#EC4899","#94A3B8"];
+const gc=g=>(g&&g.color)||"#94A3B8";
+function gcard(a,id,name,sub,col){return `<div class="card row" data-a="${a}" data-id="${id}" style="cursor:pointer;border-left:6px solid ${col||"var(--bd)"}"><div class="sp"><b>${h(name)}</b><div class="mu">${sub}</div></div><span>›</span></div>`}
 function vInv(){
-  return `<h1>Inventarios</h1>`+(S.tpls.length?S.tpls.map(t=>`<div class="card row" data-a="open" data-id="${t.id}" style="cursor:pointer"><div class="sp"><b>${h(t.name)}</b><div class="mu">${t.fields.length} campos · ${(S.recs[t.id]||[]).length} registros</div></div><span>›</span></div>`).join(""):`<div class="card mu">Todavía no tienes listas. Crea la primera: escoge qué vas a inventariar y qué datos quieres anotar de cada cosa.</div>`)+`<button class="p" data-a="newtpl" style="width:100%">+ Crear lista de inventario</button>`;
+  if(V.tpl)return vList();
+  if(V.grp)return vGrp();
+  const un=gl("none");
+  return `<h1>Inventarios</h1>`+(S.groups.length||un.length?S.groups.map(g=>gcard("opengrp",g.id,g.name,gl(g.id).length+" listas",gc(g))).join("")+(un.length?gcard("opengrp","none","Sin grupo",un.length+" listas","#94A3B8"):""):`<div class="card mu">Crea un grupo (por ejemplo una sede: CDA, CDB) y dentro metes sus listas: computadoras, teléfonos, consumibles…</div>`)+`<button class="p" data-a="newgrp" style="width:100%">+ Crear grupo (sede)</button>`;
+}
+function vGrp(){
+  const none=V.grp==="none",g=S.groups.find(x=>x.id===V.grp);
+  if(!none&&!g){V.grp=null;return vInv()}
+  const L=gl(V.grp),col=gc(g);
+  return `<div class="row"><button class="s" data-a="back">‹ Volver</button><div class="sp"></div>${none?"":`<button class="s" data-a="edgrp">Renombrar / color</button>`}</div><h1><span style="display:inline-block;width:14px;height:14px;border-radius:50%;background:${col};margin-right:8px"></span>${h(none?"Sin grupo":g.name)}</h1>
+  <div class="row" style="margin-bottom:12px"><button class="p sp" data-a="newtpl">+ Nueva lista</button>${L.length?`<button data-a="xlsxg">⬇ Excel del grupo</button>`:""}</div>`+
+  (L.length?L.map(t=>gcard("open",t.id,t.name,t.fields.length+" campos · "+(S.recs[t.id]||[]).length+" registros",col)).join(""):`<div class="card mu">Este grupo no tiene listas todavía.</div>`)+
+  (none?"":`<div class="row" style="margin-top:14px"><button class="s d" data-a="delgrp">Borrar este grupo</button></div>`);
+}
+function sheetName(n,used){const b=n.replace(/[\\\/?*\[\]:]/g,"").slice(0,28)||"Lista";let x=b,i=2;while(used.has(x.toLowerCase()))x=b+" "+(i++);used.add(x.toLowerCase());return x}
+function exportGroup(gid){
+  const L=gl(gid),name=gid==="none"?"Sin grupo":S.groups.find(g=>g.id===gid).name;
+  xl(L,name+".xlsx");
 }
 function vList(){
   const t=S.tpls.find(x=>x.id===V.tpl),rows=S.recs[t.id]||[];
@@ -106,23 +144,28 @@ function vRep(){
 }
 function vCfg(){
   return `<h1>Ajustes</h1><div class="card"><b>Tipos de reporte</b><div class="mu" style="margin:4px 0 8px">Toca uno para borrarlo.</div>${S.rtypes.map((t,i)=>`<span class="chip" data-a="deltype" data-i="${i}">${h(t)} ✕</span>`).join("")}<div class="row"><input class="sp" id="nt" placeholder="Nuevo tipo de reporte"><button data-a="addtype">Agregar</button></div></div>
+  <div class="card"><b>Apariencia</b><div class="mu" style="margin:4px 0 8px">Oscuro viene por defecto.</div>${[["dark","Oscuro"],["light","Claro"],["auto","Automático"]].map(([k,l])=>`<span class="chip" data-a="theme" data-k="${k}" style="${(S.theme||"dark")===k?"border-color:var(--ac);color:var(--ac);font-weight:700":""}">${l}</span>`).join("")}</div>
+  <div class="card"><b>Mis atajos</b><div class="mu" style="margin:4px 0 8px">Plantillas de campos para crear listas rápido. Toca uno para editarlo.</div>${S.presets.map(p=>`<span class="chip" data-a="edpre" data-id="${p.id}">${h(p.name)} ✎</span>`).join("")}<div style="margin-top:6px"><button class="s" data-a="newpre">+ Nuevo atajo</button></div></div>
   <div class="card"><b>Pasar mis plantillas a otro equipo</b><div class="mu" style="margin:4px 0 10px">Guarda tus listas (solo los campos, sin registros) y los tipos de reporte. En el otro teléfono o tablet, importas el archivo o pegas el texto.</div>
   <div class="row"><button class="p" data-a="expcfg">⬇ Descargar plantillas</button><button data-a="copycfg">Copiar código</button></div>
   <label>Importar: pega el código aquí</label><textarea id="imp" placeholder="Pega aquí el código copiado"></textarea>
   <div class="row" style="margin-top:8px"><button data-a="impTxt">Importar código</button></div>
   <label>o escoge el archivo .json</label><input type="file" accept=".json,application/json" data-a="impfile"></div>
+  <div class="card"><b>Versión ${VERSION}</b>${LOG.map(l=>`<div class="kv"><span class="mu">${l[0]}</span><span>${h(l[1])}</span></div>`).join("")}</div>
   <div class="card"><b>Respaldo completo</b><div class="mu" style="margin:4px 0 4px">Último respaldo: ${S.lastBackup||"nunca"}. La app te lo recuerda los viernes.</div><div class="mu" style="margin:0 0 10px">Incluye también todos los registros y reportes (las fotos pesan).</div><button data-a="expall">⬇ Descargar respaldo</button></div>
   <div class="card"><b>Cargar respaldo de otro equipo</b><label>¿Cómo cargarlo?</label><select id="rmode"><option value="merge">Combinar: agregar lo que falte, sin borrar nada</option><option value="replace">Reemplazar todo lo de este equipo</option></select><label>Escoge el archivo de respaldo (.json)</label><input type="file" data-a="restorefile"></div>`;
 }
 function vModal(){
   const m=V.modal;
-  if(m.k==="tpl")return `<div class="modal"><div class="sheet"><h2>${m.id?"Editar lista":"Nueva lista"}</h2>
-  ${m.id?"":`<div class="mu">Atajos:</div><div style="margin:6px 0">${Object.keys(PRESETS).map(k=>`<span class="chip" data-a="preset" data-k="${k}">${k}</span>`).join("")}</div>`}
-  <label>Nombre de la lista</label><input data-m="name" value="${h(m.name)}" placeholder="Ej: Computadoras de delivery">
+  if(m.k==="cf")return `<div class="modal"><div class="sheet"><h2>${h(m.msg)}</h2><div class="row" style="margin-top:14px"><button class="p sp" data-a="cfok">Aceptar</button><button data-a="closem">Cancelar</button></div></div></div>`;
+  if(m.k==="grp")return `<div class="modal"><div class="sheet"><h2>${m.id?"Renombrar grupo":"Nuevo grupo"}</h2><label>Nombre (ej: CDA)</label><input data-m="name" value="${h(m.name)}"><label>Color de la sede</label><div>${PAL.map(c=>`<span data-a="gcol" data-c="${c}" style="display:inline-block;width:44px;height:44px;border-radius:12px;margin:0 8px 8px 0;background:${c};cursor:pointer;${m.color===c?"outline:3px solid var(--tx);outline-offset:2px":""}"></span>`).join("")}</div>${m.id||!S.groups.length?"":`<label>Copiar las listas (sin registros) de otro grupo</label><select data-m="copy"><option value="">No, empezar vacío</option>${S.groups.map(g=>`<option value="${g.id}">${h(g.name)}</option>`).join("")}</select>`}<div class="row" style="margin-top:14px"><button class="p sp" data-a="savegrp">Guardar</button><button data-a="closem">Cancelar</button></div></div></div>`;
+  if(m.k==="tpl")return `<div class="modal"><div class="sheet"><h2>${m.pre?(m.preid?"Editar atajo":"Nuevo atajo"):m.id?"Editar lista":"Nueva lista"}</h2>
+  ${m.id||m.pre||!S.presets.length?"":`<div class="mu">Atajos:</div><div style="margin:6px 0">${S.presets.map(p=>`<span class="chip" data-a="preset" data-id="${p.id}">${h(p.name)}</span>`).join("")}</div>`}
+  <label>Nombre de la lista</label><input data-m="name" value="${h(m.name)}" placeholder="Ej: Computadoras de delivery">${m.pre?"":`<label>Grupo</label><select data-m="gid"><option value="">Sin grupo</option>${S.groups.map(g=>`<option value="${g.id}" ${m.gid===g.id?"selected":""}>${h(g.name)}</option>`).join("")}</select>`}
   <label>Campos (lo que vas a anotar de cada uno)</label>
   ${m.fields.map((f,i)=>`<div class="card"><div class="row"><input class="sp" data-fi="${i}" data-p="n" value="${h(f.n)}" placeholder="Ej: RAM"><select data-fi="${i}" data-p="t" style="width:auto"><option value="text" ${f.t==="text"?"selected":""}>Texto</option><option value="number" ${f.t==="number"?"selected":""}>Número</option><option value="select" ${f.t==="select"?"selected":""}>Opciones</option></select><button class="s d" data-a="delfield" data-i="${i}">✕</button></div>${f.t==="select"?`<input data-fi="${i}" data-p="o" value="${h(f.o)}" placeholder="Opciones separadas por coma: Negro, Cian, Magenta" style="margin-top:8px">`:""}</div>`).join("")}
   <button class="s" data-a="addfield">+ Campo</button>
-  <div class="row" style="margin-top:14px"><button class="p sp" data-a="savetpl">Guardar</button><button data-a="closem">Cancelar</button></div></div></div>`;
+  <div class="row" style="margin-top:14px"><button class="p sp" data-a="savetpl">Guardar</button><button data-a="closem">Cancelar</button></div>${!m.id&&!m.pre?`<div class="row" style="margin-top:8px"><button class="s" data-a="topreset">Guardar estos campos como atajo</button></div>`:""}${m.preid?`<div class="row" style="margin-top:8px"><button class="s d" data-a="delpre">Borrar este atajo</button></div>`:""}</div></div>`;
   const t=S.tpls.find(x=>x.id===m.tid),r=m.rid?(S.recs[t.id]||[]).find(x=>x._id===m.rid):{};
   return `<div class="modal"><div class="sheet"><h2>${m.rid?"Editar":"Agregar"} · ${h(t.name)}</h2>${t.fields.map(f=>`<label>${h(f.n)}</label>`+(f.t==="select"?`<select data-rf="${f.id}"><option value=""></option>${(f.o||"").split(",").map(o=>o.trim()).filter(Boolean).map(o=>`<option ${r[f.id]===o?"selected":""}>${h(o)}</option>`).join("")}</select>`:`<input data-rf="${f.id}" type="${f.t==="number"?"number":"text"}" inputmode="${f.t==="number"?"decimal":"text"}" value="${h(r[f.id])}">`)).join("")}
   <div class="row" style="margin-top:14px"><button class="p sp" data-a="saverec">Guardar</button>${m.rid?"":`<button data-a="saverec" data-more="1">Guardar y otro</button>`}<button data-a="closem">Cancelar</button></div></div></div>`;
@@ -141,11 +184,11 @@ async function shareRep(r){
 }
 async function copyText(t,msg){try{await navigator.clipboard.writeText(t);toast(msg||"Copiado")}catch(e){const a=document.createElement("textarea");a.value=t;document.body.appendChild(a);a.select();try{document.execCommand("copy");toast(msg||"Copiado")}catch(x){toast("No pude copiar")}a.remove()}}
 function resize(file){return new Promise(res=>{const im=new Image();im.onload=()=>{const k=Math.min(1,900/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=im.width*k;c.height=im.height*k;c.getContext("2d").drawImage(im,0,0,c.width,c.height);res(c.toDataURL("image/jpeg",.7))};im.src=URL.createObjectURL(file)})}
-const cfgObj=()=>({app:"invrep",tpls:S.tpls,rtypes:S.rtypes});
+const cfgObj=()=>({app:"invrep",tpls:S.tpls,groups:S.groups,presets:S.presets,rtypes:S.rtypes});
 function importCfg(txt){
   try{const o=JSON.parse(txt);if(!o||!Array.isArray(o.tpls))throw 0;
     let n=0;o.tpls.forEach(t=>{if(!S.tpls.some(x=>x.id===t.id)){S.tpls.push(t);n++}});
-    (o.rtypes||[]).forEach(t=>{if(!S.rtypes.includes(t))S.rtypes.push(t)});
+    (o.rtypes||[]).forEach(t=>{if(!S.rtypes.includes(t))S.rtypes.push(t)});(o.groups||[]).forEach(g=>{if(!S.groups.some(x=>x.id===g.id))S.groups.push(g)});(o.presets||[]).forEach(p=>{if(!S.presets.some(x=>x.id===p.id||x.name===p.name))S.presets.push(p)});
     if(o.recs){Object.keys(o.recs).forEach(k=>{if(!S.recs[k])S.recs[k]=o.recs[k]});(o.reps||[]).forEach(r=>{if(!S.reps.some(x=>x.id===r.id))S.reps.push(r)})}
     save();render();toast(n+" lista(s) nueva(s) importada(s)")}
   catch(e){toast("Ese código no parece válido")}
@@ -155,7 +198,7 @@ function mergeAll(o){
   let nt=0,nr=0,np=0;
   o.tpls.forEach(t=>{if(!S.tpls.some(x=>x.id===t.id)){S.tpls.push(t);nt++}});
   Object.keys(o.recs||{}).forEach(k=>{const cur=S.recs[k]=S.recs[k]||[];(o.recs[k]||[]).forEach(r=>{if(!cur.some(x=>x._id===r._id)){cur.push(r);nr++}})});
-  (o.rtypes||[]).forEach(t=>{if(!S.rtypes.includes(t))S.rtypes.push(t)});
+  (o.rtypes||[]).forEach(t=>{if(!S.rtypes.includes(t))S.rtypes.push(t)});(o.groups||[]).forEach(g=>{if(!S.groups.some(x=>x.id===g.id))S.groups.push(g)});(o.presets||[]).forEach(p=>{if(!S.presets.some(x=>x.id===p.id||x.name===p.name))S.presets.push(p)});
   (o.reps||[]).forEach(r=>{if(!S.reps.some(x=>x.id===r.id)){S.reps.push(r);np++}});
   return nt+" listas, "+nr+" registros y "+np+" reportes nuevos";
 }
@@ -164,9 +207,7 @@ function restoreAll(txt){
   try{const o=JSON.parse(txt);if(!o||o.app!=="invrep"||!Array.isArray(o.tpls))throw 0;
     let msg;
     if(mode==="replace"){
-      if(!confirm("Esto reemplaza TODO lo que hay en este equipo con el respaldo. ¿Continuar?"))return;
-      S=Object.assign(JSON.parse(JSON.stringify(DEF)),{tpls:o.tpls,recs:o.recs||{},rtypes:o.rtypes||DEF.rtypes,reps:o.reps||[],lastBackup:S.lastBackup});
-      msg="Respaldo cargado";
+      ask("Esto reemplaza TODO lo que hay en este equipo con el respaldo. ¿Continuar?",()=>{S=Object.assign(JSON.parse(JSON.stringify(DEF)),{tpls:o.tpls,recs:o.recs||{},rtypes:o.rtypes||DEF.rtypes,reps:o.reps||[],groups:o.groups||[],presets:o.presets||S.presets,lastBackup:S.lastBackup,theme:S.theme});V.draft.type=S.rtypes[0]||"";save();toast("Respaldo cargado")});render();return;
     }else msg="Agregado: "+mergeAll(o);
     V.draft.type=S.rtypes.includes(V.draft.type)?V.draft.type:(S.rtypes[0]||"");
     if(save()){render();toast(msg)}}
@@ -175,7 +216,7 @@ function restoreAll(txt){
 document.addEventListener("input",e=>{
   const t=e.target,m=V.modal;
   if(t.dataset.d)V.draft[t.dataset.d]=t.value;
-  if(m&&m.k==="tpl"){if(t.dataset.m)m.name=t.value;if(t.dataset.fi!==undefined){const f=m.fields[t.dataset.fi];f[t.dataset.p]=t.value;if(t.dataset.p==="t")render()}}
+  if(m&&(m.k==="tpl"||m.k==="grp")){if(t.dataset.m)m[t.dataset.m]=t.value;if(t.dataset.fi!==undefined){const f=m.fields[t.dataset.fi];f[t.dataset.p]=t.value;if(t.dataset.p==="t")render()}}
 });
 document.addEventListener("change",async e=>{
   const t=e.target,a=t.dataset.a;
@@ -189,29 +230,52 @@ document.addEventListener("click",async e=>{
   const a=el.dataset.a,id=el.dataset.id,m=V.modal,t=S.tpls.find(x=>x.id===V.tpl);
   if(a==="tab"){V.tab=el.dataset.k;V.tpl=null;V.modal=null}
   else if(a==="open")V.tpl=id;
-  else if(a==="back")V.tpl=null;
-  else if(a==="newtpl")V.modal={k:"tpl",name:"",fields:[{n:"",t:"text",o:""}]};
-  else if(a==="edtpl")V.modal={k:"tpl",id:t.id,name:t.name,fields:t.fields.map(f=>({...f}))};
-  else if(a==="preset"){m.name=m.name||el.dataset.k;m.fields=PRESETS[el.dataset.k].map(n=>({n,t:"text",o:""}))}
+  else if(a==="cfok"){const f=m.fn;V.modal=null;f()}
+  else if(a==="opengrp")V.grp=id;
+  else if(a==="back"){if(V.tpl)V.tpl=null;else V.grp=null}
+  else if(a==="newtpl")V.modal={k:"tpl",name:"",gid:V.grp==="none"?"":(V.grp||""),fields:[{n:"",t:"text",o:""}]};
+  else if(a==="edtpl")V.modal={k:"tpl",id:t.id,name:t.name,gid:t.gid||"",fields:t.fields.map(f=>({...f}))};
+  else if(a==="preset"){const P=S.presets.find(x=>x.id===id);m.name=m.name||P.name;m.fields=P.fields.map(f=>({n:f.n,t:f.t,o:f.o||""}))}
   else if(a==="addfield")m.fields.push({n:"",t:"text",o:""});
   else if(a==="delfield")m.fields.splice(+el.dataset.i,1);
   else if(a==="closem")V.modal=null;
   else if(a==="savetpl"){
     const fs=m.fields.filter(f=>f.n.trim()).map(f=>({id:f.id||uid(),n:f.n.trim(),t:f.t,o:f.o||""}));
     if(!m.name.trim()||!fs.length){toast("Ponle nombre y al menos un campo");return}
-    if(m.id){const x=S.tpls.find(q=>q.id===m.id);x.name=m.name.trim();x.fields=fs}
-    else S.tpls.push({id:uid(),name:m.name.trim(),fields:fs});
+    if(m.pre){const P=S.presets.find(q=>q.id===m.preid);if(P){P.name=m.name.trim();P.fields=fs}else S.presets.push({id:uid(),name:m.name.trim(),fields:fs})}
+    else if(m.id){const x=S.tpls.find(q=>q.id===m.id);x.name=m.name.trim();x.fields=fs;x.gid=m.gid||undefined}
+    else S.tpls.push({id:uid(),name:m.name.trim(),fields:fs,gid:m.gid||undefined});
     save();V.modal=null}
-  else if(a==="deltpl"){if(confirm("¿Borrar la lista y todos sus registros?")){S.tpls=S.tpls.filter(x=>x.id!==t.id);delete S.recs[t.id];V.tpl=null;save()}}
+  else if(a==="deltpl"){ask("¿Borrar la lista y todos sus registros?",()=>{S.tpls=S.tpls.filter(x=>x.id!==t.id);delete S.recs[t.id];V.tpl=null;save()})}
   else if(a==="newrec")V.modal={k:"rec",tid:V.tpl};
   else if(a==="edrec")V.modal={k:"rec",tid:V.tpl,rid:id};
-  else if(a==="delrec"){if(confirm("¿Borrar este registro?")){S.recs[t.id]=S.recs[t.id].filter(r=>r._id!==id);save()}}
+  else if(a==="delrec"){ask("¿Borrar este registro?",()=>{S.recs[t.id]=S.recs[t.id].filter(r=>r._id!==id);save()})}
   else if(a==="saverec"){
     const o={};document.querySelectorAll("[data-rf]").forEach(i=>o[i.dataset.rf]=i.value.trim());
     const tt=S.tpls.find(x=>x.id===m.tid);S.recs[tt.id]=S.recs[tt.id]||[];
     if(m.rid)Object.assign(S.recs[tt.id].find(r=>r._id===m.rid),o);else S.recs[tt.id].push({_id:uid(),...o});
     save();V.modal=el.dataset.more?{k:"rec",tid:tt.id}:null;if(el.dataset.more)toast("Guardado")}
   else if(a==="xlsx")exportXlsx(t);
+  else if(a==="xlsxg")exportGroup(V.grp);
+  else if(a==="newgrp")V.modal={k:"grp",name:"",copy:"",color:PAL[S.groups.length%PAL.length]};
+  else if(a==="gcol")m.color=el.dataset.c;
+  else if(a==="theme"){S.theme=el.dataset.k;save();applyTheme()}
+  else if(a==="edgrp")V.modal={k:"grp",id:V.grp,name:S.groups.find(x=>x.id===V.grp).name,color:gc(S.groups.find(x=>x.id===V.grp))};
+  else if(a==="savegrp"){
+    if(!m.name.trim()){toast("Ponle un nombre al grupo");return}
+    if(m.id){const G=S.groups.find(x=>x.id===m.id);G.name=m.name.trim();G.color=m.color}
+    else{const g={id:uid(),name:m.name.trim(),color:m.color};S.groups.push(g);
+      if(m.copy)S.tpls.filter(x=>x.gid===m.copy).forEach(x=>S.tpls.push({id:uid(),name:x.name,gid:g.id,fields:x.fields.map(f=>({...f,id:uid()}))}));
+      V.grp=g.id}
+    save();V.modal=null}
+  else if(a==="delgrp"){ask("¿Borrar este grupo con todas sus listas y registros?",()=>{S.tpls.filter(x=>x.gid===V.grp).forEach(x=>delete S.recs[x.id]);S.tpls=S.tpls.filter(x=>x.gid!==V.grp);S.groups=S.groups.filter(x=>x.id!==V.grp);V.grp=null;save()})}
+  else if(a==="newpre")V.modal={k:"tpl",pre:1,name:"",fields:[{n:"",t:"text",o:""}]};
+  else if(a==="edpre"){const P=S.presets.find(x=>x.id===id);V.modal={k:"tpl",pre:1,preid:id,name:P.name,fields:P.fields.map(f=>({...f}))}}
+  else if(a==="delpre"){ask("¿Borrar este atajo? Las listas ya creadas no se afectan.",()=>{S.presets=S.presets.filter(x=>x.id!==m.preid);V.modal=null;save()})}
+  else if(a==="topreset"){
+    const fs=m.fields.filter(f=>f.n.trim()).map(f=>({n:f.n.trim(),t:f.t,o:f.o||""}));
+    if(!m.name.trim()||!fs.length){toast("Ponle nombre y al menos un campo");return}
+    S.presets.push({id:uid(),name:m.name.trim(),fields:fs});save();toast("Atajo guardado");return}
   else if(a==="share"){const r=curRep();if(!r.desc&&!r.photo){toast("Agrega foto o descripción");return}shareRep(r);return}
   else if(a==="copy"){const r=curRep();if(!r.desc){toast("Falta la descripción");return}copyText(repText(r));return}
   else if(a==="saverep"){const r=curRep();if(!r.desc&&!r.photo){toast("Agrega foto o descripción");return}S.reps.push(r);if(save()){V.draft={type:r.type,photo:"",desc:"",equipo:""};toast("Guardado en el historial")}}
@@ -228,6 +292,7 @@ document.addEventListener("click",async e=>{
   render();
 });
 if(!S.rtypes.includes(V.draft.type))V.draft.type=S.rtypes[0]||"";
+$("#ver").textContent="v"+VERSION;applyTheme();
 render();
 if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
 if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{});
