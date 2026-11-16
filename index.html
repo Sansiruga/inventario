@@ -32,19 +32,25 @@ nav button.on{color:var(--ac);font-weight:700}
 .chip{display:inline-block;border:1px solid var(--bd);border-radius:99px;padding:9px 14px;margin:0 8px 8px 0;font-size:14px;background:var(--card);cursor:pointer}
 #toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:10px 16px;border-radius:10px;z-index:30;display:none;max-width:90%}
 .ver{position:fixed;top:calc(env(safe-area-inset-top,0px) + 4px);right:8px;font-size:11px;color:var(--mu);opacity:.7;pointer-events:none;z-index:5}
+.upi .card b,.upi .kv,.upi h1,.upi .chip,.upi input:not([type=file]),.upi textarea,.upi option{text-transform:uppercase}
+.upr .card,.upr input:not([type=file]),.upr textarea{text-transform:uppercase}
 img.ph{max-width:100%;max-height:220px;border-radius:10px;margin-top:8px}
 </style></head><body>
 <div class="ver" id="ver"></div><main id="app"></main><nav id="nav"></nav><div id="toast"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
 <script>
-const VERSION="1.6.0";
+const VERSION="1.7.0";
 const GUIDE=[
 ["Inventarios","Aquí llevas el control de lo que hay. Todo se organiza así: grupo (una sede) → lista (computadoras, toners…) → registros (cada equipo o artículo)."],
 ["Grupos (sedes) y colores","Crea un grupo por sede (CDA, CDB). Al crearlo escoges su color y, si quieres, copias las listas de otro grupo para no armarlas de nuevo. Con «Renombrar / color» lo cambias después."],
 ["Listas y campos","Dentro de un grupo toca «+ Nueva lista», ponle nombre y define los campos que vas a anotar: Texto, Número, Opciones (tú escribes las opciones) o Cantidad (stock). Con «Editar campos» los cambias cuando quieras."],
 ["Atajos","Son listas de campos ya listas (Computadoras, Teléfonos, Toner). Los editas, borras o creas en Ajustes → Mis atajos, o con «Guardar estos campos como atajo» al crear una lista."],
 ["Registros","Dentro de una lista toca «+ Agregar» por cada equipo o artículo. «Guardar y otro» sirve para cargar varios seguidos."],
-["Mover material entre sedes","Si una lista tiene un campo de tipo Cantidad (stock), cada registro muestra el botón «Mover a otra sede». Dices cuántos salen y a cuál sede van: se resta en la de origen y se suma en la de destino (si allá no existe esa lista o ese artículo, se crea solo). Todo queda anotado en «Movimientos entre sedes», en la pantalla de Inventarios. Para devolver algo, haz el movimiento al revés."],
+["Mover entre listas y sedes","Cada registro tiene el botón «Mover»: escoges la sede y la lista destino (por ejemplo, de «PC en uso» a «PC dañadas», o de CDA a CDB). Los campos que falten en la lista destino se agregan solos. Si la lista tiene un campo Cantidad (stock), dices cuántos pasan: se resta en el origen y se suma en el destino. Todo queda en «Movimientos entre sedes»."],
+["Cantidad rápida y poco stock","En las listas con campo Cantidad, usa − y + para ajustar de uno en uno, o toca el número para escribir otro valor o sumar/restar 5. Al agregar o editar un registro puedes poner «Avisar cuando queden» (mínimo, por artículo): si la cantidad llega a ese número o baja de él, el registro se marca en rojo y sale un aviso arriba en Inventarios."],
+["Ordenar y recordar","En cada lista, «Ordenar» te deja escoger el campo (nombre, modelo, ubicación…) y la dirección A→Z o Z→A. Al escribir en un campo de texto, la app te sugiere lo que ya has puesto antes. Al crear o editar campos, usa las flechas ↑ ↓ para cambiar su posición."],
+["Mayúsculas","En Ajustes → Apariencia puedes activar o desactivar las mayúsculas en inventarios y en reportes."],
+["Borrar con seguridad","Borrar una lista o un grupo pide dos verificaciones: primero confirmas, y luego tienes que escribir BORRAR."],
 ["Excel","En cada lista, «⬇ Excel» baja esa lista. Dentro de un grupo, «⬇ Excel del grupo» baja un solo archivo con una hoja por cada lista. Hay que haber abierto la app con internet al menos una vez."],
 ["Reportes","En la pestaña Reportes escoges el tipo y pones equipo y descripción. Con «📷 Tomar foto» abres la cámara directo, y con «🖼 Galería» eliges fotos que ya tienes. Puedes poner hasta 5 fotos por reporte. «Compartir por WhatsApp» abre el menú del teléfono con todo listo; «Copiar texto» es el respaldo si las fotos no se adjuntan. Los tipos de reporte los manejas en Ajustes."],
 ["Fotos y espacio","Las fotos se reducen solas para que pesen poco, pero el espacio del navegador es limitado (unas 30 fotos en total). En Ajustes → Fotos de reportes ves cuánto ocupan y puedes borrar las de reportes viejos: el texto del reporte se queda y solo se quita la foto."],
@@ -54,9 +60,9 @@ const GUIDE=[
 ["Dónde se guardan los datos","Viven en el navegador de este equipo, no en internet. Por eso cada equipo guarda lo suyo y el respaldo es tu seguro. Si se borran los datos de Chrome, se pierden."],
 ["Apariencia y versión","En Ajustes escoges Oscuro, Claro o Automático. El número de versión sale en la esquina: si subes cambios y ese número cambia, ya cargó la actualización."]
 ];
-const LOG=[["1.6.0","Botón de cámara, varias fotos por reporte, borrar fotos viejas y respaldo sin fotos"],["1.5.0","Guía de uso y movimientos de cantidades entre sedes"],["1.4.0","Tema oscuro grafito, colores por sede, botones más grandes y Excel azul"],["1.3.1","Confirmaciones dentro de la app (arregla borrar) y Excel con diseño"],["1.3.0","Grupos (sedes), atajos editables y Excel por grupo"],["1.2.2","Se muestra la versión en la esquina"],["1.2.1","Corrección para que las actualizaciones se carguen"],["1.2.0","Filtro de reportes por tipo"],["1.1.0","Combinar respaldos y recordatorio semanal"],["1.0.0","Inventarios, reportes y exportar a Excel"]];
+const LOG=[["1.7.0","Mover entre listas y sedes, orden, alerta de poco stock, sugerencias, flechas, mayúsculas y borrado con doble verificación"],["1.6.0","Botón de cámara, varias fotos por reporte, borrar fotos viejas y respaldo sin fotos"],["1.5.0","Guía de uso y movimientos de cantidades entre sedes"],["1.4.0","Tema oscuro grafito, colores por sede, botones más grandes y Excel azul"],["1.3.1","Confirmaciones dentro de la app (arregla borrar) y Excel con diseño"],["1.3.0","Grupos (sedes), atajos editables y Excel por grupo"],["1.2.2","Se muestra la versión en la esquina"],["1.2.1","Corrección para que las actualizaciones se carguen"],["1.2.0","Filtro de reportes por tipo"],["1.1.0","Combinar respaldos y recordatorio semanal"],["1.0.0","Inventarios, reportes y exportar a Excel"]];
 const KEY="invrep_v1";
-const DEF={tpls:[],recs:{},rtypes:["Error de sistema de facturación","Error de caja","Falla de equipo","Otro"],reps:[],groups:[],presets:null,moves:[],theme:"dark",lastBackup:"",snooze:""};
+const DEF={tpls:[],recs:{},rtypes:["Error de sistema de facturación","Error de caja","Falla de equipo","Otro"],reps:[],groups:[],presets:null,moves:[],upInv:true,upRep:false,theme:"dark",lastBackup:"",snooze:""};
 let S;try{S=JSON.parse(localStorage.getItem(KEY))||null}catch(e){S=null}
 S=Object.assign(JSON.parse(JSON.stringify(DEF)),S||{});
 let V={grp:null,filter:"",tab:"inv",tpl:null,modal:null,draft:{type:"",photos:[],desc:"",equipo:""}};
@@ -112,13 +118,22 @@ function banner(){return due()?`<div class="card" style="border-color:var(--ac)"
 function doBackup(withPhotos){const D=withPhotos?S:{...S,reps:S.reps.map(r=>({...r,photo:undefined,photos:[],fotosBorradas:(r.fotosBorradas||0)+ph(r).length}))};dl("respaldo-"+(withPhotos?"completo-":"")+ymd()+".json",new Blob([JSON.stringify({app:"invrep",...D,lastBackup:ymd()})],{type:"application/json"}));S.lastBackup=ymd();save()}
 function render(){
   $("#nav").innerHTML=[["inv","📦 Inventarios"],["rep","📝 Reportes"],["cfg","⚙️ Ajustes"]].map(([k,l])=>`<button class="${V.tab===k?"on":""}" data-a="tab" data-k="${k}">${l}</button>`).join("");
-  $("#app").innerHTML=banner()+(V.tab==="inv"?vInv():V.tab==="rep"?vRep():vCfg())+(V.modal?vModal():"");
+  $("#app").className=(V.tab==="inv"&&S.upInv?"upi":"")+(V.tab==="rep"&&S.upRep?" upr":"");
+  $("#app").innerHTML=banner()+(V.tab==="inv"?lowBanner():"")+(V.tab==="inv"?vInv():V.tab==="rep"?vRep():vCfg())+(V.modal?vModal():"");
 }
 function applyTheme(){const t=S.theme||"dark",r=document.documentElement;if(t==="auto")r.removeAttribute("data-theme");else r.setAttribute("data-theme",t)}
-const ask=(msg,fn)=>{V.modal={k:"cf",msg,fn}};
+const ask=(msg,fn,word)=>{V.modal={k:"cf",msg,fn,word,typed:""}};
+const nm=x=>String(x??"").trim().toLowerCase();
+const U=x=>S.upInv?String(x??"").toUpperCase():String(x??"");
+const itemDesc=(t,r)=>t.fields.filter(f=>f.t!=="qty").map(f=>r[f.id]).filter(Boolean).join(" · ");
+function sugg(fn){const k=nm(fn),set=new Set();S.tpls.forEach(t=>t.fields.forEach(f=>{if(f.t==="text"&&nm(f.n)===k)(S.recs[t.id]||[]).forEach(r=>{const v=String(r[f.id]||"").trim();if(v)set.add(v)})}));return[...set].sort((a,b)=>a.localeCompare(b,"es"))}
+function lows(){const o=[];S.tpls.forEach(t=>{const q=t.fields.find(f=>f.t==="qty");if(!q)return;(S.recs[t.id]||[]).forEach(r=>{const m=parseFloat(r._min),n=parseFloat(r[q.id])||0;if(!isNaN(m)&&n<=m)o.push({t,r,n})})});return o}
+function lowBanner(){const L=lows();if(!L.length)return"";return `<div class="card" style="border-color:var(--dg)"><b style="color:var(--dg)">⚠ Poco stock (${L.length})</b>${L.slice(0,6).map(x=>`<div class="kv"><span>${h(itemDesc(x.t,x.r)||x.t.name)} <span class="mu">· ${h(gnm(x.t.gid))}</span></span><b>quedan ${x.n}</b></div>`).join("")}${L.length>6?`<div class="mu">y ${L.length-6} más…</div>`:""}</div>`}
+function sortRows(t,rows){const f=t.sortF&&t.fields.find(x=>x.id===t.sortF);if(!f)return rows;const num=f.t==="number"||f.t==="qty",d=t.sortD==="desc"?-1:1;return rows.slice().sort((a,b)=>{const x=a[f.id]??"",y=b[f.id]??"";return d*(num?(parseFloat(x)||0)-(parseFloat(y)||0):String(x).localeCompare(String(y),"es",{numeric:true,sensitivity:"base"}))})}
+function mvInfo(m){const tt=S.tpls.find(x=>x.id===m.tid),q=tt.fields.find(f=>f.t==="qty"),r=S.recs[tt.id].find(x=>x._id===m.rid),lopts=S.tpls.filter(x=>(x.gid||"")===(m.to||"")&&x.id!==tt.id),same=lopts.find(x=>nm(x.name)===nm(tt.name)),tl=m.tl||(same?same.id:"");return{tt,q,r,lopts,same,tl}}
 const gl=g=>S.tpls.filter(t=>g==="none"?!t.gid:t.gid===g);
 const gname=t=>{const g=S.groups.find(x=>x.id===t.gid);return g?g.name+" - ":""};
-const aoaOf=t=>[t.fields.map(f=>f.n),...(S.recs[t.id]||[]).map(r=>t.fields.map(f=>r[f.id]??""))];
+const aoaOf=t=>[t.fields.map(f=>U(f.n)),...(S.recs[t.id]||[]).map(r=>t.fields.map(f=>U(r[f.id]??"")))];
 const PAL=["#3B82F6","#22C55E","#F97316","#EF4444","#A855F7","#EAB308","#EC4899","#94A3B8"];
 const gc=g=>(g&&g.color)||"#94A3B8";
 function gcard(a,id,name,sub,col){return `<div class="card row" data-a="${a}" data-id="${id}" style="cursor:pointer;border-left:6px solid ${col||"var(--bd)"}"><div class="sp"><b>${h(name)}</b><div class="mu">${sub}</div></div><span>›</span></div>`}
@@ -130,7 +145,7 @@ function vInv(){
   return `<h1>Inventarios</h1>`+(S.groups.length||un.length?S.groups.map(g=>gcard("opengrp",g.id,g.name,gl(g.id).length+" listas",gc(g))).join("")+(un.length?gcard("opengrp","none","Sin grupo",un.length+" listas","#94A3B8"):""):`<div class="card mu">Crea un grupo (por ejemplo una sede: CDA, CDB) y dentro metes sus listas: computadoras, teléfonos, consumibles…</div>`)+`<button class="p" data-a="newgrp" style="width:100%">+ Crear grupo (sede)</button>`+(S.moves.length?`<button data-a="moves" style="width:100%;margin-top:10px">📦 Movimientos entre sedes (${S.moves.length})</button>`:"");
 }
 const gnm=id=>id?(S.groups.find(g=>g.id===id)||{name:"Sin grupo"}).name:"Sin grupo";
-function vMoves(){return `<div class="row"><button class="s" data-a="back">‹ Volver</button></div><h1>Movimientos entre sedes</h1>`+S.moves.slice().reverse().map(x=>`<div class="card"><b>${h(x.qty)} × ${h(x.list)}</b>${x.item?`<div>${h(x.item)}</div>`:""}<div class="mu">${h(x.from)} → ${h(x.to)} · ${h(x.date)}</div></div>`).join("")}
+function vMoves(){return `<div class="row"><button class="s" data-a="back">‹ Volver</button></div><h1>Movimientos entre sedes</h1>`+S.moves.slice().reverse().map(x=>`<div class="card"><b>${x.qty!==""&&x.qty!=null?h(x.qty)+" × ":""}${h(x.list)}</b>${x.item?`<div>${h(x.item)}</div>`:""}<div class="mu">${h(x.from)} → ${h(x.to)} · ${h(x.date)}</div></div>`).join("")}
 function vGrp(){
   const none=V.grp==="none",g=S.groups.find(x=>x.id===V.grp);
   if(!none&&!g){V.grp=null;return vInv()}
@@ -146,10 +161,12 @@ function exportGroup(gid){
   xl(L,name+".xlsx");
 }
 function vList(){
-  const t=S.tpls.find(x=>x.id===V.tpl),rows=S.recs[t.id]||[],qf=t.fields.find(f=>f.t==="qty");
+  const t=S.tpls.find(x=>x.id===V.tpl),qf=t.fields.find(f=>f.t==="qty"),rows=sortRows(t,S.recs[t.id]||[]);
   return `<div class="row"><button class="s" data-a="back">‹ Volver</button><div class="sp"></div><button class="s" data-a="edtpl">Editar campos</button></div><h1>${h(t.name)}</h1>
-  <div class="row" style="margin-bottom:12px"><button class="p sp" data-a="newrec">+ Agregar</button><button data-a="xlsx">⬇ Excel</button></div>`+
-  (rows.length?rows.map((r,i)=>`<div class="card">${t.fields.map(f=>`<div class="kv"><span class="mu">${h(f.n)}</span><b>${h(r[f.id])}</b></div>`).join("")}<div class="row" style="margin-top:10px">${qf?`<button class="s" data-a="mv" data-id="${r._id}">Mover a otra sede</button>`:""}<button class="s" data-a="edrec" data-id="${r._id}">Editar</button><button class="s d" data-a="delrec" data-id="${r._id}">Borrar</button></div></div>`).join(""):`<div class="card mu">Sin registros todavía.</div>`)+
+  <div class="row" style="margin-bottom:12px"><button class="p sp" data-a="newrec">+ Agregar</button><button data-a="xlsx">⬇ Excel</button></div>
+  <div class="row" style="margin-bottom:12px;flex-wrap:nowrap"><span class="mu">Ordenar</span><select class="sp" data-a="sortf"><option value="">Como los agregué</option>${t.fields.map(f=>`<option value="${f.id}" ${t.sortF===f.id?"selected":""}>${h(f.n)}</option>`).join("")}</select><button class="s" data-a="sortd">${t.sortD==="desc"?"Z→A ↓":"A→Z ↑"}</button></div>`+
+  (rows.length?rows.map(r=>{const n=qf?parseFloat(r[qf.id])||0:0,mn=parseFloat(r._min),low=qf&&!isNaN(mn)&&n<=mn;
+    return `<div class="card"${low?' style="border-color:var(--dg)"':""}>${t.fields.map(f=>f.t==="qty"?`<div class="kv" style="align-items:center"><span class="mu">${h(f.n)}</span><span class="row" style="flex-wrap:nowrap"><button class="s" data-a="qminus" data-id="${r._id}">−</button><b data-a="qset" data-id="${r._id}" style="min-width:52px;text-align:center;font-size:22px;cursor:pointer">${h(r[f.id]||0)}</b><button class="s" data-a="qplus" data-id="${r._id}">+</button></span></div>`:`<div class="kv"><span class="mu">${h(f.n)}</span><b>${h(r[f.id])}</b></div>`).join("")}${low?`<div style="color:var(--dg);font-weight:600;margin-top:6px">⚠ Quedan pocos (avisar a ${h(r._min)})</div>`:""}<div class="row" style="margin-top:10px"><button class="s" data-a="mv" data-id="${r._id}">Mover</button><button class="s" data-a="edrec" data-id="${r._id}">Editar</button><button class="s d" data-a="delrec" data-id="${r._id}">Borrar</button></div></div>`}).join(""):`<div class="card mu">Sin registros todavía.</div>`)+
   `<div class="row" style="margin-top:14px"><button class="s d" data-a="deltpl">Borrar esta lista</button></div>`;
 }
 function filt(){
@@ -168,7 +185,7 @@ function vRep(){
 }
 function vCfg(){
   return `<h1>Ajustes</h1><button class="p" data-a="guide" style="width:100%;margin-bottom:12px">📖 Cómo funciona (guía de uso)</button><div class="card"><b>Tipos de reporte</b><div class="mu" style="margin:4px 0 8px">Toca uno para borrarlo.</div>${S.rtypes.map((t,i)=>`<span class="chip" data-a="deltype" data-i="${i}">${h(t)} ✕</span>`).join("")}<div class="row"><input class="sp" id="nt" placeholder="Nuevo tipo de reporte"><button data-a="addtype">Agregar</button></div></div>
-  <div class="card"><b>Apariencia</b><div class="mu" style="margin:4px 0 8px">Oscuro viene por defecto.</div>${[["dark","Oscuro"],["light","Claro"],["auto","Automático"]].map(([k,l])=>`<span class="chip" data-a="theme" data-k="${k}" style="${(S.theme||"dark")===k?"border-color:var(--ac);color:var(--ac);font-weight:700":""}">${l}</span>`).join("")}</div>
+  <div class="card"><b>Apariencia</b><div class="mu" style="margin:4px 0 8px">Oscuro viene por defecto.</div>${[["dark","Oscuro"],["light","Claro"],["auto","Automático"]].map(([k,l])=>`<span class="chip" data-a="theme" data-k="${k}" style="${(S.theme||"dark")===k?"border-color:var(--ac);color:var(--ac);font-weight:700":""}">${l}</span>`).join("")}<div style="margin-top:10px">${[["upInv","Mayúsculas en inventarios"],["upRep","Mayúsculas en reportes"]].map(([k,l])=>`<span class="chip" data-a="tgl" data-k="${k}" style="${S[k]?"border-color:var(--ac);color:var(--ac);font-weight:700":""}">${l}: ${S[k]?"Sí":"No"}</span>`).join("")}</div></div>
   <div class="card"><b>Mis atajos</b><div class="mu" style="margin:4px 0 8px">Plantillas de campos para crear listas rápido. Toca uno para editarlo.</div>${S.presets.map(p=>`<span class="chip" data-a="edpre" data-id="${p.id}">${h(p.name)} ✎</span>`).join("")}<div style="margin-top:6px"><button class="s" data-a="newpre">+ Nuevo atajo</button></div></div>
   <div class="card"><b>Pasar mis plantillas a otro equipo</b><div class="mu" style="margin:4px 0 10px">Guarda tus listas (solo los campos, sin registros) y los tipos de reporte. En el otro teléfono o tablet, importas el archivo o pegas el texto.</div>
   <div class="row"><button class="p" data-a="expcfg">⬇ Descargar plantillas</button><button data-a="copycfg">Copiar código</button></div>
@@ -182,25 +199,27 @@ function vCfg(){
 }
 function vModal(){
   const m=V.modal;
-  if(m.k==="cf")return `<div class="modal"><div class="sheet"><h2>${h(m.msg)}</h2><div class="row" style="margin-top:14px"><button class="p sp" data-a="cfok">Aceptar</button><button data-a="closem">Cancelar</button></div></div></div>`;
+  if(m.k==="cf")return `<div class="modal"><div class="sheet"><h2>${h(m.msg)}</h2>${m.word?`<input data-m="typed" placeholder="Escribe ${m.word}" autocomplete="off" style="margin-top:12px">`:""}<div class="row" style="margin-top:14px"><button class="p sp" data-a="cfok" ${m.word?'style="background:var(--dg);border-color:var(--dg);color:#fff"':""}>${m.word?"Sí, borrar":"Aceptar"}</button><button data-a="closem">Cancelar</button></div></div></div>`;
   if(m.k==="guide")return `<div class="modal"><div class="sheet"><h2>Cómo funciona</h2>${GUIDE.map(g=>`<details class="card"><summary><b>${h(g[0])}</b></summary><div style="margin-top:8px">${h(g[1])}</div></details>`).join("")}<button data-a="closem" style="width:100%">Cerrar</button></div></div>`;
-  if(m.k==="mv"){const tt=S.tpls.find(x=>x.id===m.tid),q=tt.fields.find(f=>f.t==="qty"),r=S.recs[tt.id].find(x=>x._id===m.rid),opts=S.groups.filter(g=>g.id!==tt.gid);
-    return `<div class="modal"><div class="sheet"><h2>Mover a otra sede</h2><div class="card">${tt.fields.filter(f=>f.t!=="qty").map(f=>`<div class="kv"><span class="mu">${h(f.n)}</span><b>${h(r[f.id])}</b></div>`).join("")}<div class="kv"><span class="mu">Disponible</span><b>${h(r[q.id]||0)}</b></div></div>${opts.length?`<label>¿Cuántos salen?</label><input data-m="qty" type="number" inputmode="decimal" value="${h(m.qty)}"><label>Destino</label><select data-m="to"><option value="">Escoge la sede</option>${opts.map(g=>`<option value="${g.id}" ${m.to===g.id?"selected":""}>${h(g.name)}</option>`).join("")}</select>`:`<div class="mu">Necesitas otro grupo (sede) para poder mover.</div>`}<div class="row" style="margin-top:14px">${opts.length?`<button class="p sp" data-a="domove">Mover</button>`:""}<button class="sp" data-a="closem">Cancelar</button></div></div></div>`}
+  if(m.k==="qty"){const tt=S.tpls.find(x=>x.id===m.tid),r=S.recs[tt.id].find(x=>x._id===m.rid);
+    return `<div class="modal"><div class="sheet"><h2>Cambiar cantidad</h2><div class="mu">${h(itemDesc(tt,r))}</div><input data-m="val" type="number" inputmode="decimal" value="${h(m.val)}" style="font-size:24px;text-align:center;margin:12px 0"><div class="row">${[-5,-1,1,5].map(n=>`<button class="sp" data-a="qadd" data-n="${n}">${n>0?"+":""}${n}</button>`).join("")}</div><div class="row" style="margin-top:14px"><button class="p sp" data-a="qsave">Guardar</button><button class="sp" data-a="closem">Cancelar</button></div></div></div>`}
+  if(m.k==="mv"){const {tt,q,r,lopts,same,tl}=mvInfo(m),gopts=[...S.groups.map(g=>[g.id,g.name]),["","Sin grupo"]];
+    return `<div class="modal"><div class="sheet"><h2>Mover</h2><div class="card">${tt.fields.map(f=>`<div class="kv"><span class="mu">${h(f.n)}</span><b>${h(r[f.id])}</b></div>`).join("")}</div><label>Sede destino</label><select data-m="to">${gopts.map(g=>`<option value="${g[0]}" ${(m.to||"")===g[0]?"selected":""}>${h(g[1])}</option>`).join("")}</select><label>Lista destino</label><select data-m="tl"><option value="">Escoge la lista</option>${lopts.map(x=>`<option value="${x.id}" ${tl===x.id?"selected":""}>${h(x.name)}</option>`).join("")}${same?"":`<option value="new" ${tl==="new"?"selected":""}>➕ Crear lista «${h(tt.name)}» en esa sede</option>`}</select>${q?`<label>¿Cuántos pasan? (disponible ${h(r[q.id]||0)})</label><input data-m="qty" type="number" inputmode="decimal" value="${h(m.qty)}">`:""}<div class="mu" style="margin-top:8px">Los campos que no existan en la lista destino se agregan solos.</div><div class="row" style="margin-top:14px"><button class="p sp" data-a="domove">Mover</button><button class="sp" data-a="closem">Cancelar</button></div></div></div>`}
   if(m.k==="grp")return `<div class="modal"><div class="sheet"><h2>${m.id?"Renombrar grupo":"Nuevo grupo"}</h2><label>Nombre (ej: CDA)</label><input data-m="name" value="${h(m.name)}"><label>Color de la sede</label><div>${PAL.map(c=>`<span data-a="gcol" data-c="${c}" style="display:inline-block;width:44px;height:44px;border-radius:12px;margin:0 8px 8px 0;background:${c};cursor:pointer;${m.color===c?"outline:3px solid var(--tx);outline-offset:2px":""}"></span>`).join("")}</div>${m.id||!S.groups.length?"":`<label>Copiar las listas (sin registros) de otro grupo</label><select data-m="copy"><option value="">No, empezar vacío</option>${S.groups.map(g=>`<option value="${g.id}">${h(g.name)}</option>`).join("")}</select>`}<div class="row" style="margin-top:14px"><button class="p sp" data-a="savegrp">Guardar</button><button data-a="closem">Cancelar</button></div></div></div>`;
   if(m.k==="tpl")return `<div class="modal"><div class="sheet"><h2>${m.pre?(m.preid?"Editar atajo":"Nuevo atajo"):m.id?"Editar lista":"Nueva lista"}</h2>
   ${m.id||m.pre||!S.presets.length?"":`<div class="mu">Atajos:</div><div style="margin:6px 0">${S.presets.map(p=>`<span class="chip" data-a="preset" data-id="${p.id}">${h(p.name)}</span>`).join("")}</div>`}
   <label>Nombre de la lista</label><input data-m="name" value="${h(m.name)}" placeholder="Ej: Computadoras de delivery">${m.pre?"":`<label>Grupo</label><select data-m="gid"><option value="">Sin grupo</option>${S.groups.map(g=>`<option value="${g.id}" ${m.gid===g.id?"selected":""}>${h(g.name)}</option>`).join("")}</select>`}
   <label>Campos (lo que vas a anotar de cada uno)</label>
-  ${m.fields.map((f,i)=>`<div class="card"><div class="row"><input class="sp" data-fi="${i}" data-p="n" value="${h(f.n)}" placeholder="Ej: RAM"><select data-fi="${i}" data-p="t" style="width:auto"><option value="text" ${f.t==="text"?"selected":""}>Texto</option><option value="number" ${f.t==="number"?"selected":""}>Número</option><option value="select" ${f.t==="select"?"selected":""}>Opciones</option><option value="qty" ${f.t==="qty"?"selected":""}>Cantidad (stock)</option></select><button class="s d" data-a="delfield" data-i="${i}">✕</button></div>${f.t==="select"?`<input data-fi="${i}" data-p="o" value="${h(f.o)}" placeholder="Opciones separadas por coma: Negro, Cian, Magenta" style="margin-top:8px">`:""}</div>`).join("")}
+  ${m.fields.map((f,i)=>`<div class="card"><div class="row"><input class="sp" data-fi="${i}" data-p="n" value="${h(f.n)}" placeholder="Ej: RAM"><select data-fi="${i}" data-p="t" style="width:auto"><option value="text" ${f.t==="text"?"selected":""}>Texto</option><option value="number" ${f.t==="number"?"selected":""}>Número</option><option value="select" ${f.t==="select"?"selected":""}>Opciones</option><option value="qty" ${f.t==="qty"?"selected":""}>Cantidad (stock)</option></select><button class="s" data-a="fup" data-i="${i}">↑</button><button class="s" data-a="fdn" data-i="${i}">↓</button><button class="s d" data-a="delfield" data-i="${i}">✕</button></div>${f.t==="select"?`<input data-fi="${i}" data-p="o" value="${h(f.o)}" placeholder="Opciones separadas por coma: Negro, Cian, Magenta" style="margin-top:8px">`:""}</div>`).join("")}
   <button class="s" data-a="addfield">+ Campo</button>
   <div class="row" style="margin-top:14px"><button class="p sp" data-a="savetpl">Guardar</button><button data-a="closem">Cancelar</button></div>${!m.id&&!m.pre?`<div class="row" style="margin-top:8px"><button class="s" data-a="topreset">Guardar estos campos como atajo</button></div>`:""}${m.preid?`<div class="row" style="margin-top:8px"><button class="s d" data-a="delpre">Borrar este atajo</button></div>`:""}</div></div>`;
   const t=S.tpls.find(x=>x.id===m.tid),r=m.rid?(S.recs[t.id]||[]).find(x=>x._id===m.rid):{};
-  return `<div class="modal"><div class="sheet"><h2>${m.rid?"Editar":"Agregar"} · ${h(t.name)}</h2>${t.fields.map(f=>`<label>${h(f.n)}</label>`+(f.t==="select"?`<select data-rf="${f.id}"><option value=""></option>${(f.o||"").split(",").map(o=>o.trim()).filter(Boolean).map(o=>`<option ${r[f.id]===o?"selected":""}>${h(o)}</option>`).join("")}</select>`:`<input data-rf="${f.id}" type="${f.t==="number"||f.t==="qty"?"number":"text"}" inputmode="${f.t==="number"||f.t==="qty"?"decimal":"text"}" value="${h(r[f.id])}">`)).join("")}
+  return `<div class="modal"><div class="sheet"><h2>${m.rid?"Editar":"Agregar"} · ${h(t.name)}</h2>${t.fields.map(f=>`<label>${h(f.n)}</label>`+(f.t==="select"?`<select data-rf="${f.id}"><option value=""></option>${(f.o||"").split(",").map(o=>o.trim()).filter(Boolean).map(o=>`<option ${r[f.id]===o?"selected":""}>${h(o)}</option>`).join("")}</select>`:`<input data-rf="${f.id}" ${f.t==="text"?`list="dl_${f.id}" autocomplete="off"`:""} type="${f.t==="number"||f.t==="qty"?"number":"text"}" inputmode="${f.t==="number"||f.t==="qty"?"decimal":"text"}" value="${h(r[f.id])}">${f.t==="text"?`<datalist id="dl_${f.id}">${sugg(f.n).map(v=>`<option value="${h(v)}">`).join("")}</datalist>`:""}`)).join("")}${t.fields.some(f=>f.t==="qty")?`<label>Avisar cuando queden (mínimo, opcional)</label><input data-rf="_min" type="number" inputmode="decimal" value="${h(r._min)}" placeholder="Ej: 5">`:""}
   <div class="row" style="margin-top:14px"><button class="p sp" data-a="saverec">Guardar</button>${m.rid?"":`<button data-a="saverec" data-more="1">Guardar y otro</button>`}<button data-a="closem">Cancelar</button></div></div></div>`;
 }
 
 function repText(r){return `*${r.type}*\n📅 ${r.date}`+(r.equipo?`\n🖥 Equipo: ${r.equipo}`:"")+`\n\n${r.desc}`}
-function curRep(){const d=V.draft;return{id:uid(),type:d.type||S.rtypes[0]||"Reporte",date:new Date().toLocaleString("es-VE",{dateStyle:"short",timeStyle:"short"}),equipo:d.equipo.trim(),desc:d.desc.trim(),photos:[...d.photos],ts:Date.now()}}
+function curRep(){const d=V.draft;return{id:uid(),type:d.type||S.rtypes[0]||"Reporte",date:new Date().toLocaleString("es-VE",{dateStyle:"short",timeStyle:"short"}),equipo:S.upRep?d.equipo.trim().toUpperCase():d.equipo.trim(),desc:S.upRep?d.desc.trim().toUpperCase():d.desc.trim(),photos:[...d.photos],ts:Date.now()}}
 async function shareRep(r){
   const text=repText(r);let files=[];
   for(const [i,u] of ph(r).entries()){const b=await (await fetch(u)).blob();files.push(new File([b],"reporte"+(i+1)+".jpg",{type:"image/jpeg"}))}
@@ -235,7 +254,7 @@ function restoreAll(txt){
   try{const o=JSON.parse(txt);if(!o||o.app!=="invrep"||!Array.isArray(o.tpls))throw 0;
     let msg;
     if(mode==="replace"){
-      ask("Esto reemplaza TODO lo que hay en este equipo con el respaldo. ¿Continuar?",()=>{S=Object.assign(JSON.parse(JSON.stringify(DEF)),{tpls:o.tpls,recs:o.recs||{},rtypes:o.rtypes||DEF.rtypes,reps:o.reps||[],groups:o.groups||[],presets:o.presets||S.presets,moves:o.moves||[],lastBackup:S.lastBackup,theme:S.theme});V.draft.type=S.rtypes[0]||"";save();toast("Respaldo cargado")});render();return;
+      ask("Esto reemplaza TODO lo que hay en este equipo con el respaldo. ¿Continuar?",()=>{S=Object.assign(JSON.parse(JSON.stringify(DEF)),{tpls:o.tpls,recs:o.recs||{},rtypes:o.rtypes||DEF.rtypes,reps:o.reps||[],groups:o.groups||[],presets:o.presets||S.presets,moves:o.moves||[],lastBackup:S.lastBackup,theme:S.theme,upInv:S.upInv,upRep:S.upRep});V.draft.type=S.rtypes[0]||"";save();toast("Respaldo cargado")});render();return;
     }else msg="Agregado: "+mergeAll(o);
     V.draft.type=S.rtypes.includes(V.draft.type)?V.draft.type:(S.rtypes[0]||"");
     if(save()){render();toast(msg)}}
@@ -244,10 +263,11 @@ function restoreAll(txt){
 document.addEventListener("input",e=>{
   const t=e.target,m=V.modal;
   if(t.dataset.d)V.draft[t.dataset.d]=t.value;
-  if(m&&(m.k==="tpl"||m.k==="grp"||m.k==="mv")){if(t.dataset.m)m[t.dataset.m]=t.value;if(t.dataset.fi!==undefined){const f=m.fields[t.dataset.fi];f[t.dataset.p]=t.value;if(t.dataset.p==="t")render()}}
+  if(m&&(m.k==="tpl"||m.k==="grp"||m.k==="mv"||m.k==="cf"||m.k==="qty")){if(t.dataset.m){m[t.dataset.m]=t.value;if(m.k==="mv"&&t.dataset.m==="to"){m.tl="";render()}}if(t.dataset.fi!==undefined){const f=m.fields[t.dataset.fi];f[t.dataset.p]=t.value;if(t.dataset.p==="t")render()}}
 });
 document.addEventListener("change",async e=>{
   const t=e.target,a=t.dataset.a;
+  if(a==="sortf"){const tt=S.tpls.find(x=>x.id===V.tpl);tt.sortF=t.value;save();render();return}
   if(a==="filt"){V.filter=t.value;render();return}
   if(a==="photo"&&t.files.length){for(const f of [...t.files]){if(V.draft.photos.length>=5){toast("Máximo 5 fotos por reporte");break}V.draft.photos.push(await resize(f))}render()}
   if(a==="impfile"&&t.files[0]){importCfg(await t.files[0].text())}
@@ -258,7 +278,7 @@ document.addEventListener("click",async e=>{
   const a=el.dataset.a,id=el.dataset.id,m=V.modal,t=S.tpls.find(x=>x.id===V.tpl);
   if(a==="tab"){V.tab=el.dataset.k;V.tpl=null;V.moves=false;V.modal=null}
   else if(a==="open")V.tpl=id;
-  else if(a==="cfok"){const f=m.fn;V.modal=null;f()}
+  else if(a==="cfok"){if(m.word&&String(m.typed||"").trim().toUpperCase()!==m.word){toast("Escribe "+m.word+" para confirmar");return}const f=m.fn;V.modal=null;f()}
   else if(a==="opengrp")V.grp=id;
   else if(a==="back"){if(V.moves)V.moves=false;else if(V.tpl)V.tpl=null;else V.grp=null}
   else if(a==="newtpl")V.modal={k:"tpl",name:"",gid:V.grp==="none"?"":(V.grp||""),fields:[{n:"",t:"text",o:""}]};
@@ -268,56 +288,71 @@ document.addEventListener("click",async e=>{
   else if(a==="delfield")m.fields.splice(+el.dataset.i,1);
   else if(a==="closem")V.modal=null;
   else if(a==="savetpl"){
-    const fs=m.fields.filter(f=>f.n.trim()).map(f=>({id:f.id||uid(),n:f.n.trim(),t:f.t,o:f.o||""}));
+    const fs=m.fields.filter(f=>f.n.trim()).map(f=>({id:f.id||uid(),n:U(f.n.trim()),t:f.t,o:U(f.o||"")}));
     if(!m.name.trim()||!fs.length){toast("Ponle nombre y al menos un campo");return}
+    m.name=U(m.name.trim());
     if(m.pre){const P=S.presets.find(q=>q.id===m.preid);if(P){P.name=m.name.trim();P.fields=fs}else S.presets.push({id:uid(),name:m.name.trim(),fields:fs})}
     else if(m.id){const x=S.tpls.find(q=>q.id===m.id);x.name=m.name.trim();x.fields=fs;x.gid=m.gid||undefined}
     else S.tpls.push({id:uid(),name:m.name.trim(),fields:fs,gid:m.gid||undefined});
     save();V.modal=null}
-  else if(a==="deltpl"){ask("¿Borrar la lista y todos sus registros?",()=>{S.tpls=S.tpls.filter(x=>x.id!==t.id);delete S.recs[t.id];V.tpl=null;save()})}
+  else if(a==="deltpl"){ask("¿Borrar la lista y todos sus registros?",()=>{ask("Última verificación: esto no se puede deshacer. Escribe BORRAR para confirmar.",()=>{S.tpls=S.tpls.filter(x=>x.id!==t.id);delete S.recs[t.id];V.tpl=null;save()},"BORRAR")})}
   else if(a==="newrec")V.modal={k:"rec",tid:V.tpl};
   else if(a==="edrec")V.modal={k:"rec",tid:V.tpl,rid:id};
   else if(a==="delrec"){ask("¿Borrar este registro?",()=>{S.recs[t.id]=S.recs[t.id].filter(r=>r._id!==id);save()})}
   else if(a==="saverec"){
-    const o={};document.querySelectorAll("[data-rf]").forEach(i=>o[i.dataset.rf]=i.value.trim());
+    const o={};document.querySelectorAll("[data-rf]").forEach(i=>{const v=i.value.trim();o[i.dataset.rf]=i.type==="number"?v:U(v)});
     const tt=S.tpls.find(x=>x.id===m.tid);S.recs[tt.id]=S.recs[tt.id]||[];
     if(m.rid)Object.assign(S.recs[tt.id].find(r=>r._id===m.rid),o);else S.recs[tt.id].push({_id:uid(),...o});
     save();V.modal=el.dataset.more?{k:"rec",tid:tt.id}:null;if(el.dataset.more)toast("Guardado")}
   else if(a==="xlsx")exportXlsx(t);
   else if(a==="guide")V.modal={k:"guide"};
   else if(a==="moves")V.moves=true;
-  else if(a==="mv")V.modal={k:"mv",tid:V.tpl,rid:id,qty:"",to:""};
+  else if(a==="mv")V.modal={k:"mv",tid:V.tpl,rid:id,qty:"",to:t.gid||"",tl:""};
   else if(a==="domove"){
-    const tt=S.tpls.find(x=>x.id===m.tid),q=tt.fields.find(f=>f.t==="qty"),rec=S.recs[tt.id].find(x=>x._id===m.rid),n=parseFloat(m.qty),av=parseFloat(rec[q.id])||0;
-    if(!(n>0)){toast("Escribe cuántos salen");return}
-    if(n>av){toast("Solo hay "+av+" disponibles");return}
-    if(!m.to){toast("Escoge la sede destino");return}
-    const nm=x=>String(x||"").trim().toLowerCase();
-    let dt=S.tpls.find(x=>x.gid===m.to&&nm(x.name)===nm(tt.name));
-    if(!dt){dt={id:uid(),name:tt.name,gid:m.to,fields:tt.fields.map(f=>({...f,id:uid()}))};S.tpls.push(dt)}
-    const dq=dt.fields.find(f=>f.t==="qty");
-    if(!dq){toast("La lista destino no tiene campo de cantidad");return}
-    const pairs=tt.fields.filter(f=>f.t!=="qty").map(f=>[f,dt.fields.find(d=>d.t!=="qty"&&nm(d.n)===nm(f.n))]).filter(p=>p[1]);
+    const {tt,q,r:rec,tl}=mvInfo(m);
+    if(!tl){toast("Escoge la lista destino");return}
+    let n=1,av=1;
+    if(q){av=parseFloat(rec[q.id])||0;n=parseFloat(m.qty);if(!(n>0)){toast("Escribe cuántos pasan");return}if(n>av){toast("Solo hay "+av+" disponibles");return}}
+    let dt;
+    if(tl==="new"){dt={id:uid(),name:tt.name,gid:m.to||undefined,fields:tt.fields.map(f=>({...f,id:uid()}))};S.tpls.push(dt)}
+    else dt=S.tpls.find(x=>x.id===tl);
+    let added=0;
+    tt.fields.forEach(f=>{if(!dt.fields.some(d=>nm(d.n)===nm(f.n))){dt.fields.push({...f,id:uid()});added++}});
+    const pairs=tt.fields.map(f=>[f,dt.fields.find(d=>nm(d.n)===nm(f.n))]);
     S.recs[dt.id]=S.recs[dt.id]||[];
-    let dr=S.recs[dt.id].find(r=>pairs.every(p=>nm(r[p[1].id])===nm(rec[p[0].id])));
-    if(dr)dr[dq.id]=String((parseFloat(dr[dq.id])||0)+n);
-    else{dr={_id:uid()};pairs.forEach(p=>dr[p[1].id]=rec[p[0].id]||"");dr[dq.id]=String(n);S.recs[dt.id].push(dr)}
-    rec[q.id]=String(av-n);
-    S.moves.push({id:uid(),date:new Date().toLocaleString("es-VE",{dateStyle:"short",timeStyle:"short"}),from:gnm(tt.gid),to:gnm(m.to),list:tt.name,item:pairs.map(p=>rec[p[0].id]).filter(Boolean).join(" · "),qty:n});
-    if(save()){V.modal=null;toast("Listo: se movieron "+n)}}
+    if(q){
+      const dq=pairs.find(p=>p[0]===q)[1],others=pairs.filter(p=>p[0]!==q);
+      let dr=S.recs[dt.id].find(x=>others.every(p=>nm(x[p[1].id])===nm(rec[p[0].id])));
+      if(dr)dr[dq.id]=String((parseFloat(dr[dq.id])||0)+n);
+      else{dr={_id:uid()};others.forEach(p=>dr[p[1].id]=rec[p[0].id]||"");dr[dq.id]=String(n);if(rec._min!=null)dr._min=rec._min;S.recs[dt.id].push(dr)}
+      rec[q.id]=String(av-n);
+    }else{
+      const dr={_id:uid()};pairs.forEach(p=>dr[p[1].id]=rec[p[0].id]||"");S.recs[dt.id].push(dr);
+      S.recs[tt.id]=S.recs[tt.id].filter(x=>x._id!==rec._id);
+    }
+    S.moves.push({id:uid(),date:new Date().toLocaleString("es-VE",{dateStyle:"short",timeStyle:"short"}),from:gnm(tt.gid)+" · "+tt.name,to:gnm(dt.gid)+" · "+dt.name,list:tt.name,item:itemDesc(tt,rec),qty:q?n:""});
+    if(save()){V.modal=null;toast("Listo"+(added?" · se agregaron "+added+" campo(s) a la lista destino":""))}}
+  else if(a==="fup"){const i=+el.dataset.i;if(i>0){const x=m.fields[i];m.fields[i]=m.fields[i-1];m.fields[i-1]=x}}
+  else if(a==="fdn"){const i=+el.dataset.i;if(i<m.fields.length-1){const x=m.fields[i];m.fields[i]=m.fields[i+1];m.fields[i+1]=x}}
+  else if(a==="sortd"){t.sortD=t.sortD==="desc"?"asc":"desc";save()}
+  else if(a==="qminus"||a==="qplus"){const q=t.fields.find(f=>f.t==="qty"),r=S.recs[t.id].find(x=>x._id===id);r[q.id]=String(Math.max(0,(parseFloat(r[q.id])||0)+(a==="qplus"?1:-1)));save()}
+  else if(a==="qset"){const q=t.fields.find(f=>f.t==="qty"),r=S.recs[t.id].find(x=>x._id===id);V.modal={k:"qty",tid:t.id,rid:id,val:String(parseFloat(r[q.id])||0)}}
+  else if(a==="qadd"){m.val=String(Math.max(0,(parseFloat(m.val)||0)+(+el.dataset.n)))}
+  else if(a==="qsave"){const tt=S.tpls.find(x=>x.id===m.tid),q=tt.fields.find(f=>f.t==="qty"),r=S.recs[tt.id].find(x=>x._id===m.rid),n=parseFloat(m.val);if(isNaN(n)||n<0){toast("Cantidad no válida");return}r[q.id]=String(n);save();V.modal=null}
+  else if(a==="tgl"){S[el.dataset.k]=!S[el.dataset.k];save()}
   else if(a==="xlsxg")exportGroup(V.grp);
   else if(a==="newgrp")V.modal={k:"grp",name:"",copy:"",color:PAL[S.groups.length%PAL.length]};
   else if(a==="gcol")m.color=el.dataset.c;
   else if(a==="theme"){S.theme=el.dataset.k;save();applyTheme()}
   else if(a==="edgrp")V.modal={k:"grp",id:V.grp,name:S.groups.find(x=>x.id===V.grp).name,color:gc(S.groups.find(x=>x.id===V.grp))};
   else if(a==="savegrp"){
-    if(!m.name.trim()){toast("Ponle un nombre al grupo");return}
+    if(!m.name.trim()){toast("Ponle un nombre al grupo");return}m.name=U(m.name.trim());
     if(m.id){const G=S.groups.find(x=>x.id===m.id);G.name=m.name.trim();G.color=m.color}
     else{const g={id:uid(),name:m.name.trim(),color:m.color};S.groups.push(g);
       if(m.copy)S.tpls.filter(x=>x.gid===m.copy).forEach(x=>S.tpls.push({id:uid(),name:x.name,gid:g.id,fields:x.fields.map(f=>({...f,id:uid()}))}));
       V.grp=g.id}
     save();V.modal=null}
-  else if(a==="delgrp"){ask("¿Borrar este grupo con todas sus listas y registros?",()=>{S.tpls.filter(x=>x.gid===V.grp).forEach(x=>delete S.recs[x.id]);S.tpls=S.tpls.filter(x=>x.gid!==V.grp);S.groups=S.groups.filter(x=>x.id!==V.grp);V.grp=null;save()})}
+  else if(a==="delgrp"){ask("¿Borrar este grupo con todas sus listas y registros?",()=>{ask("Última verificación: esto no se puede deshacer. Escribe BORRAR para confirmar.",()=>{S.tpls.filter(x=>x.gid===V.grp).forEach(x=>delete S.recs[x.id]);S.tpls=S.tpls.filter(x=>x.gid!==V.grp);S.groups=S.groups.filter(x=>x.id!==V.grp);V.grp=null;save()},"BORRAR")})}
   else if(a==="newpre")V.modal={k:"tpl",pre:1,name:"",fields:[{n:"",t:"text",o:""}]};
   else if(a==="edpre"){const P=S.presets.find(x=>x.id===id);V.modal={k:"tpl",pre:1,preid:id,name:P.name,fields:P.fields.map(f=>({...f}))}}
   else if(a==="delpre"){ask("¿Borrar este atajo? Las listas ya creadas no se afectan.",()=>{S.presets=S.presets.filter(x=>x.id!==m.preid);V.modal=null;save()})}
