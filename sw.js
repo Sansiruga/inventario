@@ -1,4 +1,4 @@
-const C="invrep-1.7.0",XL="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js";
+const C="invrep-1.8.0",XL="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js";
 const FILES=["./","index.html","manifest.webmanifest","icon-192.png","icon-512.png"];
 self.addEventListener("install",e=>{e.waitUntil((async()=>{
   const c=await caches.open(C);await Promise.all(FILES.map(async f=>c.put(f,await fetch(f,{cache:"reload"}))));

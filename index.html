@@ -39,7 +39,7 @@ img.ph{max-width:100%;max-height:220px;border-radius:10px;margin-top:8px}
 <div class="ver" id="ver"></div><main id="app"></main><nav id="nav"></nav><div id="toast"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
 <script>
-const VERSION="1.7.0";
+const VERSION="1.8.0";
 const GUIDE=[
 ["Inventarios","Aquí llevas el control de lo que hay. Todo se organiza así: grupo (una sede) → lista (computadoras, toners…) → registros (cada equipo o artículo)."],
 ["Grupos (sedes) y colores","Crea un grupo por sede (CDA, CDB). Al crearlo escoges su color y, si quieres, copias las listas de otro grupo para no armarlas de nuevo. Con «Renombrar / color» lo cambias después."],
@@ -51,7 +51,7 @@ const GUIDE=[
 ["Ordenar y recordar","En cada lista, «Ordenar» te deja escoger el campo (nombre, modelo, ubicación…) y la dirección A→Z o Z→A. Al escribir en un campo de texto, la app te sugiere lo que ya has puesto antes. Al crear o editar campos, usa las flechas ↑ ↓ para cambiar su posición."],
 ["Mayúsculas","En Ajustes → Apariencia puedes activar o desactivar las mayúsculas en inventarios y en reportes."],
 ["Borrar con seguridad","Borrar una lista o un grupo pide dos verificaciones: primero confirmas, y luego tienes que escribir BORRAR."],
-["Excel","En cada lista, «⬇ Excel» baja esa lista. Dentro de un grupo, «⬇ Excel del grupo» baja un solo archivo con una hoja por cada lista. Hay que haber abierto la app con internet al menos una vez."],
+["Excel","En cada lista, «⬇ Excel» baja esa lista. Dentro de un grupo, «⬇ Excel del grupo» baja un solo archivo con una hoja por cada lista. Y con «⬇ Excel de varias listas», en la pantalla de Inventarios, marcas las listas que quieras (de cualquier sede) y las bajas juntas en un mismo archivo, una hoja por lista. Hay que haber abierto la app con internet al menos una vez."],
 ["Reportes","En la pestaña Reportes escoges el tipo y pones equipo y descripción. Con «📷 Tomar foto» abres la cámara directo, y con «🖼 Galería» eliges fotos que ya tienes. Puedes poner hasta 5 fotos por reporte. «Compartir por WhatsApp» abre el menú del teléfono con todo listo; «Copiar texto» es el respaldo si las fotos no se adjuntan. Los tipos de reporte los manejas en Ajustes."],
 ["Fotos y espacio","Las fotos se reducen solas para que pesen poco, pero el espacio del navegador es limitado (unas 30 fotos en total). En Ajustes → Fotos de reportes ves cuánto ocupan y puedes borrar las de reportes viejos: el texto del reporte se queda y solo se quita la foto."],
 ["Historial y filtro","Los reportes guardados quedan en el Historial. El selector de arriba filtra por tipo y muestra cuántos hay de cada uno."],
@@ -60,7 +60,7 @@ const GUIDE=[
 ["Dónde se guardan los datos","Viven en el navegador de este equipo, no en internet. Por eso cada equipo guarda lo suyo y el respaldo es tu seguro. Si se borran los datos de Chrome, se pierden."],
 ["Apariencia y versión","En Ajustes escoges Oscuro, Claro o Automático. El número de versión sale en la esquina: si subes cambios y ese número cambia, ya cargó la actualización."]
 ];
-const LOG=[["1.7.0","Mover entre listas y sedes, orden, alerta de poco stock, sugerencias, flechas, mayúsculas y borrado con doble verificación"],["1.6.0","Botón de cámara, varias fotos por reporte, borrar fotos viejas y respaldo sin fotos"],["1.5.0","Guía de uso y movimientos de cantidades entre sedes"],["1.4.0","Tema oscuro grafito, colores por sede, botones más grandes y Excel azul"],["1.3.1","Confirmaciones dentro de la app (arregla borrar) y Excel con diseño"],["1.3.0","Grupos (sedes), atajos editables y Excel por grupo"],["1.2.2","Se muestra la versión en la esquina"],["1.2.1","Corrección para que las actualizaciones se carguen"],["1.2.0","Filtro de reportes por tipo"],["1.1.0","Combinar respaldos y recordatorio semanal"],["1.0.0","Inventarios, reportes y exportar a Excel"]];
+const LOG=[["1.8.0","Excel de varias listas en un solo archivo"],["1.7.0","Mover entre listas y sedes, orden, alerta de poco stock, sugerencias, flechas, mayúsculas y borrado con doble verificación"],["1.6.0","Botón de cámara, varias fotos por reporte, borrar fotos viejas y respaldo sin fotos"],["1.5.0","Guía de uso y movimientos de cantidades entre sedes"],["1.4.0","Tema oscuro grafito, colores por sede, botones más grandes y Excel azul"],["1.3.1","Confirmaciones dentro de la app (arregla borrar) y Excel con diseño"],["1.3.0","Grupos (sedes), atajos editables y Excel por grupo"],["1.2.2","Se muestra la versión en la esquina"],["1.2.1","Corrección para que las actualizaciones se carguen"],["1.2.0","Filtro de reportes por tipo"],["1.1.0","Combinar respaldos y recordatorio semanal"],["1.0.0","Inventarios, reportes y exportar a Excel"]];
 const KEY="invrep_v1";
 const DEF={tpls:[],recs:{},rtypes:["Error de sistema de facturación","Error de caja","Falla de equipo","Otro"],reps:[],groups:[],presets:null,moves:[],upInv:true,upRep:false,theme:"dark",lastBackup:"",snooze:""};
 let S;try{S=JSON.parse(localStorage.getItem(KEY))||null}catch(e){S=null}
@@ -80,14 +80,14 @@ function dl(filename,data){
   a.href=u;a.download=filename;document.body.appendChild(a);a.click();a.remove();
   setTimeout(()=>URL.revokeObjectURL(u),4000);toast("Descargando "+filename);
 }
-async function xl(lists,filename){
+async function xl(lists,filename,lbl){
   if(!window.ExcelJS){
     if(lists.length===1){const csv="\ufeff"+aoaOf(lists[0]).map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(",")).join("\n");dl(filename.replace(/\.xlsx$/,".csv"),new Blob([csv],{type:"text/csv"}))}
     else toast("El Excel con diseño no está disponible ahora; abre la app con internet una vez");
     return}
   const wb=new ExcelJS.Workbook(),used=new Set(),bd={style:"thin",color:{argb:"FFBFC5CC"}};
   lists.forEach(t=>{
-    const A=aoaOf(t),gg=S.groups.find(g=>g.id===t.gid),ws=wb.addWorksheet(sheetName(t.name,used),{views:[{state:"frozen",ySplit:1}],properties:gg&&gg.color?{tabColor:{argb:"FF"+gg.color.slice(1)}}:{}});
+    const A=aoaOf(t),gg=S.groups.find(g=>g.id===t.gid),ws=wb.addWorksheet(sheetName(lbl?lbl(t):t.name,used),{views:[{state:"frozen",ySplit:1}],properties:gg&&gg.color?{tabColor:{argb:"FF"+gg.color.slice(1)}}:{}});
     ws.addRows(A);
     A[0].forEach((_,i)=>{ws.getColumn(i+1).width=Math.min(45,Math.max(12,...A.map(r=>String(r[i]??"").length+3)))});
     ws.autoFilter={from:{row:1,column:1},to:{row:1,column:A[0].length}};
@@ -117,9 +117,11 @@ function photoStats(){let n=0,b=0;S.reps.forEach(r=>ph(r).forEach(u=>{n++;b+=u.l
 function banner(){return due()?`<div class="card" style="border-color:var(--ac)"><b>💾 ¿Hacemos el respaldo semanal?</b><div class="mu" style="margin:4px 0 10px">${S.lastBackup?"Último respaldo: "+S.lastBackup:"Todavía no has hecho ningún respaldo."}</div><div class="row"><button class="p" data-a="bkp">Respaldo sin fotos</button><button data-a="snooze">Más tarde</button></div></div>`:""}
 function doBackup(withPhotos){const D=withPhotos?S:{...S,reps:S.reps.map(r=>({...r,photo:undefined,photos:[],fotosBorradas:(r.fotosBorradas||0)+ph(r).length}))};dl("respaldo-"+(withPhotos?"completo-":"")+ymd()+".json",new Blob([JSON.stringify({app:"invrep",...D,lastBackup:ymd()})],{type:"application/json"}));S.lastBackup=ymd();save()}
 function render(){
+  const _sh=$(".sheet"),_st=_sh?_sh.scrollTop:0;
   $("#nav").innerHTML=[["inv","📦 Inventarios"],["rep","📝 Reportes"],["cfg","⚙️ Ajustes"]].map(([k,l])=>`<button class="${V.tab===k?"on":""}" data-a="tab" data-k="${k}">${l}</button>`).join("");
   $("#app").className=(V.tab==="inv"&&S.upInv?"upi":"")+(V.tab==="rep"&&S.upRep?" upr":"");
   $("#app").innerHTML=banner()+(V.tab==="inv"?lowBanner():"")+(V.tab==="inv"?vInv():V.tab==="rep"?vRep():vCfg())+(V.modal?vModal():"");
+  const _n=$(".sheet");if(_n&&_st)_n.scrollTop=_st;
 }
 function applyTheme(){const t=S.theme||"dark",r=document.documentElement;if(t==="auto")r.removeAttribute("data-theme");else r.setAttribute("data-theme",t)}
 const ask=(msg,fn,word)=>{V.modal={k:"cf",msg,fn,word,typed:""}};
@@ -142,7 +144,7 @@ function vInv(){
   if(V.tpl)return vList();
   if(V.grp)return vGrp();
   const un=gl("none");
-  return `<h1>Inventarios</h1>`+(S.groups.length||un.length?S.groups.map(g=>gcard("opengrp",g.id,g.name,gl(g.id).length+" listas",gc(g))).join("")+(un.length?gcard("opengrp","none","Sin grupo",un.length+" listas","#94A3B8"):""):`<div class="card mu">Crea un grupo (por ejemplo una sede: CDA, CDB) y dentro metes sus listas: computadoras, teléfonos, consumibles…</div>`)+`<button class="p" data-a="newgrp" style="width:100%">+ Crear grupo (sede)</button>`+(S.moves.length?`<button data-a="moves" style="width:100%;margin-top:10px">📦 Movimientos entre sedes (${S.moves.length})</button>`:"");
+  return `<h1>Inventarios</h1>`+(S.groups.length||un.length?S.groups.map(g=>gcard("opengrp",g.id,g.name,gl(g.id).length+" listas",gc(g))).join("")+(un.length?gcard("opengrp","none","Sin grupo",un.length+" listas","#94A3B8"):""):`<div class="card mu">Crea un grupo (por ejemplo una sede: CDA, CDB) y dentro metes sus listas: computadoras, teléfonos, consumibles…</div>`)+`<button class="p" data-a="newgrp" style="width:100%">+ Crear grupo (sede)</button>`+(S.tpls.length?`<button data-a="xmulti" style="width:100%;margin-top:10px">⬇ Excel de varias listas</button>`:"")+(S.moves.length?`<button data-a="moves" style="width:100%;margin-top:10px">📦 Movimientos entre sedes (${S.moves.length})</button>`:"");
 }
 const gnm=id=>id?(S.groups.find(g=>g.id===id)||{name:"Sin grupo"}).name:"Sin grupo";
 function vMoves(){return `<div class="row"><button class="s" data-a="back">‹ Volver</button></div><h1>Movimientos entre sedes</h1>`+S.moves.slice().reverse().map(x=>`<div class="card"><b>${x.qty!==""&&x.qty!=null?h(x.qty)+" × ":""}${h(x.list)}</b>${x.item?`<div>${h(x.item)}</div>`:""}<div class="mu">${h(x.from)} → ${h(x.to)} · ${h(x.date)}</div></div>`).join("")}
@@ -201,6 +203,8 @@ function vModal(){
   const m=V.modal;
   if(m.k==="cf")return `<div class="modal"><div class="sheet"><h2>${h(m.msg)}</h2>${m.word?`<input data-m="typed" placeholder="Escribe ${m.word}" autocomplete="off" style="margin-top:12px">`:""}<div class="row" style="margin-top:14px"><button class="p sp" data-a="cfok" ${m.word?'style="background:var(--dg);border-color:var(--dg);color:#fff"':""}>${m.word?"Sí, borrar":"Aceptar"}</button><button data-a="closem">Cancelar</button></div></div></div>`;
   if(m.k==="guide")return `<div class="modal"><div class="sheet"><h2>Cómo funciona</h2>${GUIDE.map(g=>`<details class="card"><summary><b>${h(g[0])}</b></summary><div style="margin-top:8px">${h(g[1])}</div></details>`).join("")}<button data-a="closem" style="width:100%">Cerrar</button></div></div>`;
+  if(m.k==="xsel"){const gs=[...S.groups.map(g=>[g.id,g.name,gc(g)]),["","Sin grupo","#94A3B8"]];
+    return `<div class="modal"><div class="sheet"><h2>Excel de varias listas</h2><div class="mu">Marca las listas que quieras. Cada una sale en su propia hoja del mismo archivo.</div>${gs.map(g=>{const L=S.tpls.filter(t=>(t.gid||"")===g[0]);if(!L.length)return"";const all=L.every(t=>m.sel[t.id]);return `<div class="row" style="margin-top:14px"><b>${h(g[1])}</b><div class="sp"></div><button class="s" data-a="xgrp" data-id="${g[0]}">${all?"Quitar todas":"Todas"}</button></div>${L.map(t=>`<div class="card row" data-a="xtog" data-id="${t.id}" style="cursor:pointer;border-left:6px solid ${g[2]};padding:12px"><span style="font-size:22px">${m.sel[t.id]?"☑":"☐"}</span><div class="sp"><b>${h(t.name)}</b><div class="mu">${(S.recs[t.id]||[]).length} registros</div></div></div>`).join("")}`}).join("")}<label>Nombre del archivo</label><input data-m="name" value="${h(m.name)}"><div class="row" style="margin-top:14px"><button class="p sp" data-a="xdo">⬇ Excel (${Object.keys(m.sel).filter(k=>m.sel[k]).length})</button><button class="sp" data-a="closem">Cancelar</button></div></div></div>`}
   if(m.k==="qty"){const tt=S.tpls.find(x=>x.id===m.tid),r=S.recs[tt.id].find(x=>x._id===m.rid);
     return `<div class="modal"><div class="sheet"><h2>Cambiar cantidad</h2><div class="mu">${h(itemDesc(tt,r))}</div><input data-m="val" type="number" inputmode="decimal" value="${h(m.val)}" style="font-size:24px;text-align:center;margin:12px 0"><div class="row">${[-5,-1,1,5].map(n=>`<button class="sp" data-a="qadd" data-n="${n}">${n>0?"+":""}${n}</button>`).join("")}</div><div class="row" style="margin-top:14px"><button class="p sp" data-a="qsave">Guardar</button><button class="sp" data-a="closem">Cancelar</button></div></div></div>`}
   if(m.k==="mv"){const {tt,q,r,lopts,same,tl}=mvInfo(m),gopts=[...S.groups.map(g=>[g.id,g.name]),["","Sin grupo"]];
@@ -263,7 +267,7 @@ function restoreAll(txt){
 document.addEventListener("input",e=>{
   const t=e.target,m=V.modal;
   if(t.dataset.d)V.draft[t.dataset.d]=t.value;
-  if(m&&(m.k==="tpl"||m.k==="grp"||m.k==="mv"||m.k==="cf"||m.k==="qty")){if(t.dataset.m){m[t.dataset.m]=t.value;if(m.k==="mv"&&t.dataset.m==="to"){m.tl="";render()}}if(t.dataset.fi!==undefined){const f=m.fields[t.dataset.fi];f[t.dataset.p]=t.value;if(t.dataset.p==="t")render()}}
+  if(m&&(m.k==="tpl"||m.k==="grp"||m.k==="mv"||m.k==="cf"||m.k==="qty"||m.k==="xsel")){if(t.dataset.m){m[t.dataset.m]=t.value;if(m.k==="mv"&&t.dataset.m==="to"){m.tl="";render()}}if(t.dataset.fi!==undefined){const f=m.fields[t.dataset.fi];f[t.dataset.p]=t.value;if(t.dataset.p==="t")render()}}
 });
 document.addEventListener("change",async e=>{
   const t=e.target,a=t.dataset.a;
@@ -305,6 +309,10 @@ document.addEventListener("click",async e=>{
     if(m.rid)Object.assign(S.recs[tt.id].find(r=>r._id===m.rid),o);else S.recs[tt.id].push({_id:uid(),...o});
     save();V.modal=el.dataset.more?{k:"rec",tid:tt.id}:null;if(el.dataset.more)toast("Guardado")}
   else if(a==="xlsx")exportXlsx(t);
+  else if(a==="xmulti")V.modal={k:"xsel",sel:{},name:"Inventario"};
+  else if(a==="xtog")m.sel[id]=!m.sel[id];
+  else if(a==="xgrp"){const L=S.tpls.filter(t=>(t.gid||"")===(id||"")),all=L.every(t=>m.sel[t.id]);L.forEach(t=>m.sel[t.id]=!all)}
+  else if(a==="xdo"){const L=S.tpls.filter(t=>m.sel[t.id]);if(!L.length){toast("Marca al menos una lista");return}const multi=new Set(L.map(t=>t.gid||"")).size>1,fn=(m.name||"Inventario").replace(/[\\\/:*?"<>|]/g,"").trim()||"Inventario";xl(L,fn+".xlsx",multi?(t=>gnm(t.gid)+" - "+t.name):null);toast("Preparando Excel…");V.modal=null}
   else if(a==="guide")V.modal={k:"guide"};
   else if(a==="moves")V.moves=true;
   else if(a==="mv")V.modal={k:"mv",tid:V.tpl,rid:id,qty:"",to:t.gid||"",tl:""};
