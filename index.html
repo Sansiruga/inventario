@@ -39,19 +39,19 @@ img.ph{max-width:100%;max-height:220px;border-radius:10px;margin-top:8px}
 <div class="ver" id="ver"></div><main id="app"></main><nav id="nav"></nav><div id="toast"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
 <script>
-const VERSION="1.8.0";
+const VERSION="1.10.0";
 const GUIDE=[
-["Inventarios","Aquí llevas el control de lo que hay. Todo se organiza así: grupo (una sede) → lista (computadoras, toners…) → registros (cada equipo o artículo)."],
-["Grupos (sedes) y colores","Crea un grupo por sede (CDA, CDB). Al crearlo escoges su color y, si quieres, copias las listas de otro grupo para no armarlas de nuevo. Con «Renombrar / color» lo cambias después."],
+["Inventarios","Aquí llevas el control de lo que hay. Todo se organiza así: grupo → lista (computadoras, toners…) → registros (cada equipo o artículo)."],
+["Grupos y colores","Crea un grupo por cada lugar (por ejemplo CDA, CDB). Al crearlo escoges su color y, si quieres, copias las listas de otro grupo para no armarlas de nuevo. Con «Renombrar / color» lo cambias después."],
 ["Listas y campos","Dentro de un grupo toca «+ Nueva lista», ponle nombre y define los campos que vas a anotar: Texto, Número, Opciones (tú escribes las opciones) o Cantidad (stock). Con «Editar campos» los cambias cuando quieras."],
-["Atajos","Son listas de campos ya listas (Computadoras, Teléfonos, Toner). Los editas, borras o creas en Ajustes → Mis atajos, o con «Guardar estos campos como atajo» al crear una lista."],
+["Atajos","Son listas de campos ya listas (Computadoras, Teléfonos, Toner). Los editas, borras o creas en Ajustes → Mis atajos, o con «Guardar estos campos como atajo» al crear una lista. Dentro de cualquier lista, el botón «📋 Atajo» crea un atajo nuevo con sus campos o actualiza uno que ya tengas."],
 ["Registros","Dentro de una lista toca «+ Agregar» por cada equipo o artículo. «Guardar y otro» sirve para cargar varios seguidos."],
-["Mover entre listas y sedes","Cada registro tiene el botón «Mover»: escoges la sede y la lista destino (por ejemplo, de «PC en uso» a «PC dañadas», o de CDA a CDB). Los campos que falten en la lista destino se agregan solos. Si la lista tiene un campo Cantidad (stock), dices cuántos pasan: se resta en el origen y se suma en el destino. Todo queda en «Movimientos entre sedes»."],
-["Cantidad rápida y poco stock","En las listas con campo Cantidad, usa − y + para ajustar de uno en uno, o toca el número para escribir otro valor o sumar/restar 5. Al agregar o editar un registro puedes poner «Avisar cuando queden» (mínimo, por artículo): si la cantidad llega a ese número o baja de él, el registro se marca en rojo y sale un aviso arriba en Inventarios."],
-["Ordenar y recordar","En cada lista, «Ordenar» te deja escoger el campo (nombre, modelo, ubicación…) y la dirección A→Z o Z→A. Al escribir en un campo de texto, la app te sugiere lo que ya has puesto antes. Al crear o editar campos, usa las flechas ↑ ↓ para cambiar su posición."],
+["Mover entre listas y grupos","Cada registro tiene el botón «Mover»: escoges el grupo y la lista destino (por ejemplo, de «PC en uso» a «PC dañadas», o de CDA a CDB). Los campos que falten en la lista destino se agregan solos. Si la lista tiene un campo Cantidad (stock), dices cuántos pasan: se resta en el origen y se suma en el destino. Todo queda en «Movimientos entre grupos», donde puedes filtrar por grupo de origen y de destino."],
+["Cantidad rápida y poco stock","En las listas con campo Cantidad, usa − y + para ajustar de uno en uno: el cambio queda pendiente y tienes que tocar «✔ Confirmar» (o «Cancelar») para que se guarde, así no se cambia nada por un toque accidental. También puedes tocar el número para escribir otro valor o sumar/restar 5, y lo confirmas. Si prefieres que cambie directo, apaga «Confirmar cambios de cantidad» en Ajustes. Al agregar o editar un registro puedes poner «Avisar cuando queden» (mínimo, por artículo): si la cantidad llega a ese número o baja de él, el registro se marca en rojo y sale un aviso arriba en Inventarios."],
+["Ordenar y recordar","En cada lista, «Ordenar» te deja escoger el campo (nombre, modelo, ubicación…) y la dirección A→Z o Z→A. Al escribir en un campo de texto, la app te sugiere lo que ya has puesto antes. Al crear o editar campos, usa las flechas ↑ ↓ para cambiar su posición. En Inventarios y dentro de cada grupo hay un selector «Ordenar» para ver los grupos y las listas de la A a la Z, de la Z a la A, o como los creaste."],
 ["Mayúsculas","En Ajustes → Apariencia puedes activar o desactivar las mayúsculas en inventarios y en reportes."],
 ["Borrar con seguridad","Borrar una lista o un grupo pide dos verificaciones: primero confirmas, y luego tienes que escribir BORRAR."],
-["Excel","En cada lista, «⬇ Excel» baja esa lista. Dentro de un grupo, «⬇ Excel del grupo» baja un solo archivo con una hoja por cada lista. Y con «⬇ Excel de varias listas», en la pantalla de Inventarios, marcas las listas que quieras (de cualquier sede) y las bajas juntas en un mismo archivo, una hoja por lista. Hay que haber abierto la app con internet al menos una vez."],
+["Excel","En cada lista, «⬇ Excel» baja esa lista. Dentro de un grupo, «⬇ Excel del grupo» baja un solo archivo con una hoja por cada lista. Y con «⬇ Excel de varias listas», en la pantalla de Inventarios, marcas las listas que quieras (de cualquier grupo) y las bajas juntas en un mismo archivo, una hoja por lista. Si activas «🔎 Hoja de buscador», el Excel de un grupo o de varias listas trae una primera hoja BUSCADOR: escribes lo que buscas en la celda amarilla y salen todas las coincidencias de todas las hojas, con un enlace «Ir →» a cada registro. Funciona al abrir el archivo en Excel o LibreOffice con la edición activada. Hay que haber abierto la app con internet al menos una vez."],
 ["Reportes","En la pestaña Reportes escoges el tipo y pones equipo y descripción. Con «📷 Tomar foto» abres la cámara directo, y con «🖼 Galería» eliges fotos que ya tienes. Puedes poner hasta 5 fotos por reporte. «Compartir por WhatsApp» abre el menú del teléfono con todo listo; «Copiar texto» es el respaldo si las fotos no se adjuntan. Los tipos de reporte los manejas en Ajustes."],
 ["Fotos y espacio","Las fotos se reducen solas para que pesen poco, pero el espacio del navegador es limitado (unas 30 fotos en total). En Ajustes → Fotos de reportes ves cuánto ocupan y puedes borrar las de reportes viejos: el texto del reporte se queda y solo se quita la foto."],
 ["Historial y filtro","Los reportes guardados quedan en el Historial. El selector de arriba filtra por tipo y muestra cuántos hay de cada uno."],
@@ -60,12 +60,12 @@ const GUIDE=[
 ["Dónde se guardan los datos","Viven en el navegador de este equipo, no en internet. Por eso cada equipo guarda lo suyo y el respaldo es tu seguro. Si se borran los datos de Chrome, se pierden."],
 ["Apariencia y versión","En Ajustes escoges Oscuro, Claro o Automático. El número de versión sale en la esquina: si subes cambios y ese número cambia, ya cargó la actualización."]
 ];
-const LOG=[["1.8.0","Excel de varias listas en un solo archivo"],["1.7.0","Mover entre listas y sedes, orden, alerta de poco stock, sugerencias, flechas, mayúsculas y borrado con doble verificación"],["1.6.0","Botón de cámara, varias fotos por reporte, borrar fotos viejas y respaldo sin fotos"],["1.5.0","Guía de uso y movimientos de cantidades entre sedes"],["1.4.0","Tema oscuro grafito, colores por sede, botones más grandes y Excel azul"],["1.3.1","Confirmaciones dentro de la app (arregla borrar) y Excel con diseño"],["1.3.0","Grupos (sedes), atajos editables y Excel por grupo"],["1.2.2","Se muestra la versión en la esquina"],["1.2.1","Corrección para que las actualizaciones se carguen"],["1.2.0","Filtro de reportes por tipo"],["1.1.0","Combinar respaldos y recordatorio semanal"],["1.0.0","Inventarios, reportes y exportar a Excel"]];
+const LOG=[["1.10.0","Hoja de buscador opcional en el Excel y confirmación de cambios de cantidad"],["1.9.0","Atajo desde una lista, orden alfabético, filtro de movimientos y textos «grupo»"],["1.8.0","Excel de varias listas en un solo archivo"],["1.7.0","Mover entre listas y sedes, orden, alerta de poco stock, sugerencias, flechas, mayúsculas y borrado con doble verificación"],["1.6.0","Botón de cámara, varias fotos por reporte, borrar fotos viejas y respaldo sin fotos"],["1.5.0","Guía de uso y movimientos de cantidades entre sedes"],["1.4.0","Tema oscuro grafito, colores por sede, botones más grandes y Excel azul"],["1.3.1","Confirmaciones dentro de la app (arregla borrar) y Excel con diseño"],["1.3.0","Grupos (sedes), atajos editables y Excel por grupo"],["1.2.2","Se muestra la versión en la esquina"],["1.2.1","Corrección para que las actualizaciones se carguen"],["1.2.0","Filtro de reportes por tipo"],["1.1.0","Combinar respaldos y recordatorio semanal"],["1.0.0","Inventarios, reportes y exportar a Excel"]];
 const KEY="invrep_v1";
-const DEF={tpls:[],recs:{},rtypes:["Error de sistema de facturación","Error de caja","Falla de equipo","Otro"],reps:[],groups:[],presets:null,moves:[],upInv:true,upRep:false,theme:"dark",lastBackup:"",snooze:""};
+const DEF={tpls:[],recs:{},rtypes:["Error de sistema de facturación","Error de caja","Falla de equipo","Otro"],reps:[],groups:[],presets:null,moves:[],upInv:true,upRep:false,ord:"orig",cfq:true,srch:false,theme:"dark",lastBackup:"",snooze:""};
 let S;try{S=JSON.parse(localStorage.getItem(KEY))||null}catch(e){S=null}
 S=Object.assign(JSON.parse(JSON.stringify(DEF)),S||{});
-let V={grp:null,filter:"",tab:"inv",tpl:null,modal:null,draft:{type:"",photos:[],desc:"",equipo:""}};
+let V={mfo:"",mfd:"",grp:null,filter:"",tab:"inv",tpl:null,modal:null,draft:{type:"",photos:[],desc:"",equipo:""}};
 const $=s=>document.querySelector(s);
 const h=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const uid=()=>Math.random().toString(36).slice(2,9);
@@ -80,15 +80,17 @@ function dl(filename,data){
   a.href=u;a.download=filename;document.body.appendChild(a);a.click();a.remove();
   setTimeout(()=>URL.revokeObjectURL(u),4000);toast("Descargando "+filename);
 }
-async function xl(lists,filename,lbl){
+async function xl(lists,filename,lbl,search){
   if(!window.ExcelJS){
     if(lists.length===1){const csv="\ufeff"+aoaOf(lists[0]).map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(",")).join("\n");dl(filename.replace(/\.xlsx$/,".csv"),new Blob([csv],{type:"text/csv"}))}
     else toast("El Excel con diseño no está disponible ahora; abre la app con internet una vez");
     return}
   const wb=new ExcelJS.Workbook(),used=new Set(),bd={style:"thin",color:{argb:"FFBFC5CC"}};
+  const doS=!!search&&lists.some(t=>(S.recs[t.id]||[]).length>0),info=[];let wsB=null;
+  if(doS){used.add("buscador");used.add("datos");wsB=wb.addWorksheet("BUSCADOR",{properties:{tabColor:{argb:"FFFFC000"}}})}
   lists.forEach(t=>{
     const A=aoaOf(t),gg=S.groups.find(g=>g.id===t.gid),ws=wb.addWorksheet(sheetName(lbl?lbl(t):t.name,used),{views:[{state:"frozen",ySplit:1}],properties:gg&&gg.color?{tabColor:{argb:"FF"+gg.color.slice(1)}}:{}});
-    ws.addRows(A);
+    ws.addRows(A);info.push({t,ws});
     A[0].forEach((_,i)=>{ws.getColumn(i+1).width=Math.min(45,Math.max(12,...A.map(r=>String(r[i]??"").length+3)))});
     ws.autoFilter={from:{row:1,column:1},to:{row:1,column:A[0].length}};
     ws.getRow(1).height=24;
@@ -99,6 +101,31 @@ async function xl(lists,filename,lbl){
       else if(n%2===1)c.fill={type:"pattern",pattern:"solid",fgColor:{argb:"FFEAF1F8"}};
     }));
   });
+  if(doS){try{
+    const rows=[];
+    info.forEach(x=>(S.recs[x.t.id]||[]).forEach((r,i)=>rows.push([U(gnm(x.t.gid)),U(x.t.name),x.t.fields.map(f=>U(r[f.id])?U(f.n)+": "+U(r[f.id]):"").filter(Boolean).join(" | "),x.ws.name,i+2])));
+    const M=rows.length,K=Math.min(M,300),fill=c=>({type:"pattern",pattern:"solid",fgColor:{argb:c}}),hdr=c=>{c.font={bold:true,color:{argb:"FFFFFFFF"}};c.fill=fill("FF1F4E79");c.alignment={vertical:"middle",horizontal:"center"}};
+    const wsD=wb.addWorksheet("DATOS",{properties:{tabColor:{argb:"FF94A3B8"}}});
+    wsD.addRow(["GRUPO","LISTA","DETALLE","HOJA","FILA","COINCIDE","N°"]);
+    rows.forEach((x,i)=>{const r=i+2;wsD.addRow([...x,{formula:'IF(BUSCADOR!$B$3="",0,IF(ISNUMBER(SEARCH(BUSCADOR!$B$3,A'+r+'&" "&B'+r+'&" "&C'+r+')),1,0))',result:0},{formula:'IF(F'+r+'=1,SUM(F$2:F'+r+'),0)',result:0}])});
+    wsD.getRow(1).eachCell(hdr);
+    [18,22,80,20,8,10,6].forEach((w,i)=>{wsD.getColumn(i+1).width=w});
+    const A1=wsB.getCell("A1");A1.value="🔎 BUSCADOR";A1.font={bold:true,size:18,color:{argb:"FF1F4E79"}};
+    const A2=wsB.getCell("A2");A2.value="Escribe en la celda amarilla lo que buscas (nombre, marca, ubicación…). Abajo salen las coincidencias de todas las hojas; toca «Ir →» para saltar al registro.";A2.font={italic:true,color:{argb:"FF666666"}};
+    const A3=wsB.getCell("A3");A3.value="Buscar:";A3.font={bold:true,size:14};
+    wsB.mergeCells("B3:D3");const ib=wsB.getCell("B3"),mb={style:"medium",color:{argb:"FF1F4E79"}};ib.fill=fill("FFFFF2CC");ib.font={bold:true,size:14};ib.border={top:mb,left:mb,bottom:mb,right:mb};wsB.getRow(3).height=26;
+    const sm='SUM(DATOS!$F$2:$F$'+(M+1)+')';
+    wsB.getCell("A4").value={formula:'"Coincidencias: "&'+sm+'&IF('+sm+'>'+K+'," (se muestran las primeras '+K+')","")',result:"Coincidencias: 0"};
+    ["GRUPO","LISTA","DETALLE","IR"].forEach((t,i)=>{const c=wsB.getCell(6,i+1);c.value=t;hdr(c)});
+    const rg=c=>'DATOS!$'+c+'$2:$'+c+'$'+(M+1);
+    for(let k=1;k<=K;k++){const r=6+k;
+      wsB.getCell("F"+r).value={formula:'IFERROR(MATCH('+k+','+rg("G")+',0),"")',result:""};
+      ["A","B","C"].forEach(c=>{wsB.getCell(c+r).value={formula:'IF($F'+r+'="","",INDEX('+rg(c)+',$F'+r+'))',result:""}});
+      const d=wsB.getCell("D"+r);d.value={formula:'IF($F'+r+'="","",HYPERLINK("#\'"&SUBSTITUTE(INDEX('+rg("D")+',$F'+r+'),"\'","\'\'")&"\'!A"&INDEX('+rg("E")+',$F'+r+'),"Ir →"))',result:""};d.font={color:{argb:"FF0563C1"},underline:true};
+    }
+    [18,24,80,10,4,4].forEach((w,i)=>{wsB.getColumn(i+1).width=w});wsB.getColumn(6).hidden=true;
+    wb.calcProperties={fullCalcOnLoad:true};
+  }catch(e){toast("No pude agregar la hoja de buscador")}}
   try{dl(filename,new Blob([await wb.xlsx.writeBuffer()],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}))}catch(e){toast("No se pudo crear el Excel")}
 }
 const exportXlsx=t=>xl([t],gname(t)+t.name+".xlsx");
@@ -115,7 +142,7 @@ const thumbs=(a,rm)=>a.length?`<div style="display:flex;gap:8px;flex-wrap:wrap;m
 function repTime(r){if(r.ts)return r.ts;const m=/(\d{1,2})\/(\d{1,2})\/(\d{2,4})/.exec(r.date||"");if(!m)return null;const y=+m[3]<100?2000+ +m[3]:+m[3];return new Date(y,+m[2]-1,+m[1]).getTime()}
 function photoStats(){let n=0,b=0;S.reps.forEach(r=>ph(r).forEach(u=>{n++;b+=u.length*.75}));return{n,mb:(b/1048576).toFixed(1)}}
 function banner(){return due()?`<div class="card" style="border-color:var(--ac)"><b>💾 ¿Hacemos el respaldo semanal?</b><div class="mu" style="margin:4px 0 10px">${S.lastBackup?"Último respaldo: "+S.lastBackup:"Todavía no has hecho ningún respaldo."}</div><div class="row"><button class="p" data-a="bkp">Respaldo sin fotos</button><button data-a="snooze">Más tarde</button></div></div>`:""}
-function doBackup(withPhotos){const D=withPhotos?S:{...S,reps:S.reps.map(r=>({...r,photo:undefined,photos:[],fotosBorradas:(r.fotosBorradas||0)+ph(r).length}))};dl("respaldo-"+(withPhotos?"completo-":"")+ymd()+".json",new Blob([JSON.stringify({app:"invrep",...D,lastBackup:ymd()})],{type:"application/json"}));S.lastBackup=ymd();save()}
+function doBackup(withPhotos){const D=withPhotos?S:{...S,reps:S.reps.map(r=>({...r,photo:undefined,photos:[],fotosBorradas:(r.fotosBorradas||0)+ph(r).length}))};dl("respaldo-"+(withPhotos?"completo-":"")+ymd()+".json",new Blob([JSON.stringify({app:"invrep",...D,lastBackup:ymd(),ver:VERSION,saved:new Date().toISOString()})],{type:"application/json"}));S.lastBackup=ymd();save()}
 function render(){
   const _sh=$(".sheet"),_st=_sh?_sh.scrollTop:0;
   $("#nav").innerHTML=[["inv","📦 Inventarios"],["rep","📝 Reportes"],["cfg","⚙️ Ajustes"]].map(([k,l])=>`<button class="${V.tab===k?"on":""}" data-a="tab" data-k="${k}">${l}</button>`).join("");
@@ -125,6 +152,8 @@ function render(){
 }
 function applyTheme(){const t=S.theme||"dark",r=document.documentElement;if(t==="auto")r.removeAttribute("data-theme");else r.setAttribute("data-theme",t)}
 const ask=(msg,fn,word)=>{V.modal={k:"cf",msg,fn,word,typed:""}};
+const pd=r=>(V.pend&&V.pend[r._id])||0;
+const qsum=m=>{const o=parseFloat(m.old)||0,n=parseFloat(m.val);return isNaN(n)?"":n===o?"Sin cambios":(n<o?"Vas a quitar "+(o-n):"Vas a agregar "+(n-o))+": de "+o+" a "+n};
 const nm=x=>String(x??"").trim().toLowerCase();
 const U=x=>S.upInv?String(x??"").toUpperCase():String(x??"");
 const itemDesc=(t,r)=>t.fields.filter(f=>f.t!=="qty").map(f=>r[f.id]).filter(Boolean).join(" · ");
@@ -132,8 +161,10 @@ function sugg(fn){const k=nm(fn),set=new Set();S.tpls.forEach(t=>t.fields.forEac
 function lows(){const o=[];S.tpls.forEach(t=>{const q=t.fields.find(f=>f.t==="qty");if(!q)return;(S.recs[t.id]||[]).forEach(r=>{const m=parseFloat(r._min),n=parseFloat(r[q.id])||0;if(!isNaN(m)&&n<=m)o.push({t,r,n})})});return o}
 function lowBanner(){const L=lows();if(!L.length)return"";return `<div class="card" style="border-color:var(--dg)"><b style="color:var(--dg)">⚠ Poco stock (${L.length})</b>${L.slice(0,6).map(x=>`<div class="kv"><span>${h(itemDesc(x.t,x.r)||x.t.name)} <span class="mu">· ${h(gnm(x.t.gid))}</span></span><b>quedan ${x.n}</b></div>`).join("")}${L.length>6?`<div class="mu">y ${L.length-6} más…</div>`:""}</div>`}
 function sortRows(t,rows){const f=t.sortF&&t.fields.find(x=>x.id===t.sortF);if(!f)return rows;const num=f.t==="number"||f.t==="qty",d=t.sortD==="desc"?-1:1;return rows.slice().sort((a,b)=>{const x=a[f.id]??"",y=b[f.id]??"";return d*(num?(parseFloat(x)||0)-(parseFloat(y)||0):String(x).localeCompare(String(y),"es",{numeric:true,sensitivity:"base"}))})}
-function mvInfo(m){const tt=S.tpls.find(x=>x.id===m.tid),q=tt.fields.find(f=>f.t==="qty"),r=S.recs[tt.id].find(x=>x._id===m.rid),lopts=S.tpls.filter(x=>(x.gid||"")===(m.to||"")&&x.id!==tt.id),same=lopts.find(x=>nm(x.name)===nm(tt.name)),tl=m.tl||(same?same.id:"");return{tt,q,r,lopts,same,tl}}
-const gl=g=>S.tpls.filter(t=>g==="none"?!t.gid:t.gid===g);
+function mvInfo(m){const tt=S.tpls.find(x=>x.id===m.tid),q=tt.fields.find(f=>f.t==="qty"),r=S.recs[tt.id].find(x=>x._id===m.rid),lopts=ordA(S.tpls.filter(x=>(x.gid||"")===(m.to||"")&&x.id!==tt.id)),same=lopts.find(x=>nm(x.name)===nm(tt.name)),tl=m.tl||(same?same.id:"");return{tt,q,r,lopts,same,tl}}
+const ordA=a=>S.ord==="az"?a.slice().sort((x,y)=>x.name.localeCompare(y.name,"es",{sensitivity:"base"})):S.ord==="za"?a.slice().sort((x,y)=>y.name.localeCompare(x.name,"es",{sensitivity:"base"})):a;
+const ordSel=()=>`<div class="row" style="margin-bottom:12px;flex-wrap:nowrap"><span class="mu">Ordenar</span><select class="sp" data-a="ord"><option value="orig" ${S.ord==="orig"?"selected":""}>Como los creé</option><option value="az" ${S.ord==="az"?"selected":""}>A → Z</option><option value="za" ${S.ord==="za"?"selected":""}>Z → A</option></select></div>`;
+const gl=g=>ordA(S.tpls.filter(t=>g==="none"?!t.gid:t.gid===g));
 const gname=t=>{const g=S.groups.find(x=>x.id===t.gid);return g?g.name+" - ":""};
 const aoaOf=t=>[t.fields.map(f=>U(f.n)),...(S.recs[t.id]||[]).map(r=>t.fields.map(f=>U(r[f.id]??"")))];
 const PAL=["#3B82F6","#22C55E","#F97316","#EF4444","#A855F7","#EAB308","#EC4899","#94A3B8"];
@@ -144,31 +175,38 @@ function vInv(){
   if(V.tpl)return vList();
   if(V.grp)return vGrp();
   const un=gl("none");
-  return `<h1>Inventarios</h1>`+(S.groups.length||un.length?S.groups.map(g=>gcard("opengrp",g.id,g.name,gl(g.id).length+" listas",gc(g))).join("")+(un.length?gcard("opengrp","none","Sin grupo",un.length+" listas","#94A3B8"):""):`<div class="card mu">Crea un grupo (por ejemplo una sede: CDA, CDB) y dentro metes sus listas: computadoras, teléfonos, consumibles…</div>`)+`<button class="p" data-a="newgrp" style="width:100%">+ Crear grupo (sede)</button>`+(S.tpls.length?`<button data-a="xmulti" style="width:100%;margin-top:10px">⬇ Excel de varias listas</button>`:"")+(S.moves.length?`<button data-a="moves" style="width:100%;margin-top:10px">📦 Movimientos entre sedes (${S.moves.length})</button>`:"");
+  return `<h1>Inventarios</h1>`+(S.groups.length||S.tpls.length?ordSel():"")+(S.groups.length||un.length?ordA(S.groups).map(g=>gcard("opengrp",g.id,g.name,gl(g.id).length+" listas",gc(g))).join("")+(un.length?gcard("opengrp","none","Sin grupo",un.length+" listas","#94A3B8"):""):`<div class="card mu">Crea un grupo (por ejemplo CDA o CDB) y dentro metes sus listas: computadoras, teléfonos, consumibles…</div>`)+`<button class="p" data-a="newgrp" style="width:100%">+ Crear grupo</button>`+(S.tpls.length?`<button data-a="xmulti" style="width:100%;margin-top:10px">⬇ Excel de varias listas</button>`:"")+(S.moves.length?`<button data-a="moves" style="width:100%;margin-top:10px">📦 Movimientos entre grupos</button>`:"");
 }
 const gnm=id=>id?(S.groups.find(g=>g.id===id)||{name:"Sin grupo"}).name:"Sin grupo";
-function vMoves(){return `<div class="row"><button class="s" data-a="back">‹ Volver</button></div><h1>Movimientos entre sedes</h1>`+S.moves.slice().reverse().map(x=>`<div class="card"><b>${x.qty!==""&&x.qty!=null?h(x.qty)+" × ":""}${h(x.list)}</b>${x.item?`<div>${h(x.item)}</div>`:""}<div class="mu">${h(x.from)} → ${h(x.to)} · ${h(x.date)}</div></div>`).join("")}
+const mvG=(x,w)=>x[w+"G"]||String(x[w]||"").split(" · ")[0];
+function vMoves(){
+  const gs=w=>[...new Set(S.moves.map(x=>mvG(x,w)))].sort((a,b)=>a.localeCompare(b,"es")),
+  L=S.moves.filter(x=>(!V.mfo||mvG(x,"from")===V.mfo)&&(!V.mfd||mvG(x,"to")===V.mfd)).slice().reverse(),
+  op=(w,cur)=>gs(w).map(g=>`<option ${cur===g?"selected":""}>${h(g)}</option>`).join("");
+  return `<div class="row"><button class="s" data-a="back">‹ Volver</button></div><h1>Movimientos entre grupos</h1><div class="row" style="flex-wrap:nowrap;align-items:flex-end"><div class="sp"><label>Origen</label><select data-a="mfo"><option value="">Todos</option>${op("from",V.mfo)}</select></div><div class="sp"><label>Destino</label><select data-a="mfd"><option value="">Todos</option>${op("to",V.mfd)}</select></div></div><div class="mu" style="margin:10px 0">${L.length} movimiento(s)</div>`+(L.length?L.map(x=>`<div class="card"><b>${x.qty!==""&&x.qty!=null?h(x.qty)+" × ":""}${h(x.list)}</b>${x.item?`<div>${h(x.item)}</div>`:""}<div class="mu">${h(x.from)} → ${h(x.to)} · ${h(x.date)}</div></div>`).join(""):`<div class="card mu">No hay movimientos con ese filtro.</div>`);
+}
 function vGrp(){
   const none=V.grp==="none",g=S.groups.find(x=>x.id===V.grp);
   if(!none&&!g){V.grp=null;return vInv()}
   const L=gl(V.grp),col=gc(g);
   return `<div class="row"><button class="s" data-a="back">‹ Volver</button><div class="sp"></div>${none?"":`<button class="s" data-a="edgrp">Renombrar / color</button>`}</div><h1><span style="display:inline-block;width:14px;height:14px;border-radius:50%;background:${col};margin-right:8px"></span>${h(none?"Sin grupo":g.name)}</h1>
-  <div class="row" style="margin-bottom:12px"><button class="p sp" data-a="newtpl">+ Nueva lista</button>${L.length?`<button data-a="xlsxg">⬇ Excel del grupo</button>`:""}</div>`+
+  <div class="row" style="margin-bottom:12px"><button class="p sp" data-a="newtpl">+ Nueva lista</button>${L.length?`<button data-a="xlsxg">⬇ Excel del grupo</button>`
+:""}</div>`+(L.length?`<div style="margin-bottom:12px"><span class="chip" data-a="tgl" data-k="srch" style="${S.srch?"border-color:var(--ac);color:var(--ac);font-weight:700":""}">🔎 Hoja de buscador en el Excel: ${S.srch?"Sí":"No"}</span></div>`:"")+ordSel()+
   (L.length?L.map(t=>gcard("open",t.id,t.name,t.fields.length+" campos · "+(S.recs[t.id]||[]).length+" registros",col)).join(""):`<div class="card mu">Este grupo no tiene listas todavía.</div>`)+
   (none?"":`<div class="row" style="margin-top:14px"><button class="s d" data-a="delgrp">Borrar este grupo</button></div>`);
 }
 function sheetName(n,used){const b=n.replace(/[\\\/?*\[\]:]/g,"").slice(0,28)||"Lista";let x=b,i=2;while(used.has(x.toLowerCase()))x=b+" "+(i++);used.add(x.toLowerCase());return x}
 function exportGroup(gid){
   const L=gl(gid),name=gid==="none"?"Sin grupo":S.groups.find(g=>g.id===gid).name;
-  xl(L,name+".xlsx");
+  xl(L,name+".xlsx",null,S.srch);
 }
 function vList(){
   const t=S.tpls.find(x=>x.id===V.tpl),qf=t.fields.find(f=>f.t==="qty"),rows=sortRows(t,S.recs[t.id]||[]);
-  return `<div class="row"><button class="s" data-a="back">‹ Volver</button><div class="sp"></div><button class="s" data-a="edtpl">Editar campos</button></div><h1>${h(t.name)}</h1>
+  return `<div class="row"><button class="s" data-a="back">‹ Volver</button><div class="sp"></div><button class="s" data-a="l2p">📋 Atajo</button><button class="s" data-a="edtpl">Editar campos</button></div><h1>${h(t.name)}</h1>
   <div class="row" style="margin-bottom:12px"><button class="p sp" data-a="newrec">+ Agregar</button><button data-a="xlsx">⬇ Excel</button></div>
   <div class="row" style="margin-bottom:12px;flex-wrap:nowrap"><span class="mu">Ordenar</span><select class="sp" data-a="sortf"><option value="">Como los agregué</option>${t.fields.map(f=>`<option value="${f.id}" ${t.sortF===f.id?"selected":""}>${h(f.n)}</option>`).join("")}</select><button class="s" data-a="sortd">${t.sortD==="desc"?"Z→A ↓":"A→Z ↑"}</button></div>`+
   (rows.length?rows.map(r=>{const n=qf?parseFloat(r[qf.id])||0:0,mn=parseFloat(r._min),low=qf&&!isNaN(mn)&&n<=mn;
-    return `<div class="card"${low?' style="border-color:var(--dg)"':""}>${t.fields.map(f=>f.t==="qty"?`<div class="kv" style="align-items:center"><span class="mu">${h(f.n)}</span><span class="row" style="flex-wrap:nowrap"><button class="s" data-a="qminus" data-id="${r._id}">−</button><b data-a="qset" data-id="${r._id}" style="min-width:52px;text-align:center;font-size:22px;cursor:pointer">${h(r[f.id]||0)}</b><button class="s" data-a="qplus" data-id="${r._id}">+</button></span></div>`:`<div class="kv"><span class="mu">${h(f.n)}</span><b>${h(r[f.id])}</b></div>`).join("")}${low?`<div style="color:var(--dg);font-weight:600;margin-top:6px">⚠ Quedan pocos (avisar a ${h(r._min)})</div>`:""}<div class="row" style="margin-top:10px"><button class="s" data-a="mv" data-id="${r._id}">Mover</button><button class="s" data-a="edrec" data-id="${r._id}">Editar</button><button class="s d" data-a="delrec" data-id="${r._id}">Borrar</button></div></div>`}).join(""):`<div class="card mu">Sin registros todavía.</div>`)+
+    return `<div class="card"${low?' style="border-color:var(--dg)"':""}>${t.fields.map(f=>f.t==="qty"?`<div class="kv" style="align-items:center"><span class="mu">${h(f.n)}</span><span class="row" style="flex-wrap:nowrap"><button class="s" data-a="qminus" data-id="${r._id}">−</button><b data-a="qset" data-id="${r._id}" style="min-width:52px;text-align:center;font-size:22px;cursor:pointer">${h(r[f.id]||0)}</b>${pd(r)?`<span style="color:var(--ac);font-weight:700">→ ${(parseFloat(r[f.id])||0)+pd(r)}</span>`:""}<button class="s" data-a="qplus" data-id="${r._id}">+</button></span></div>`:`<div class="kv"><span class="mu">${h(f.n)}</span><b>${h(r[f.id])}</b></div>`).join("")}${pd(r)?`<div class="row" style="margin-top:8px"><button class="p sp" data-a="qok" data-id="${r._id}">✔ Confirmar ${pd(r)<0?"quitar "+(-pd(r)):"agregar "+pd(r)}</button><button data-a="qno" data-id="${r._id}">Cancelar</button></div>`:""}${low?`<div style="color:var(--dg);font-weight:600;margin-top:6px">⚠ Quedan pocos (avisar a ${h(r._min)})</div>`:""}<div class="row" style="margin-top:10px"><button class="s" data-a="mv" data-id="${r._id}">Mover</button><button class="s" data-a="edrec" data-id="${r._id}">Editar</button><button class="s d" data-a="delrec" data-id="${r._id}">Borrar</button></div></div>`}).join(""):`<div class="card mu">Sin registros todavía.</div>`)+
   `<div class="row" style="margin-top:14px"><button class="s d" data-a="deltpl">Borrar esta lista</button></div>`;
 }
 function filt(){
@@ -187,7 +225,7 @@ function vRep(){
 }
 function vCfg(){
   return `<h1>Ajustes</h1><button class="p" data-a="guide" style="width:100%;margin-bottom:12px">📖 Cómo funciona (guía de uso)</button><div class="card"><b>Tipos de reporte</b><div class="mu" style="margin:4px 0 8px">Toca uno para borrarlo.</div>${S.rtypes.map((t,i)=>`<span class="chip" data-a="deltype" data-i="${i}">${h(t)} ✕</span>`).join("")}<div class="row"><input class="sp" id="nt" placeholder="Nuevo tipo de reporte"><button data-a="addtype">Agregar</button></div></div>
-  <div class="card"><b>Apariencia</b><div class="mu" style="margin:4px 0 8px">Oscuro viene por defecto.</div>${[["dark","Oscuro"],["light","Claro"],["auto","Automático"]].map(([k,l])=>`<span class="chip" data-a="theme" data-k="${k}" style="${(S.theme||"dark")===k?"border-color:var(--ac);color:var(--ac);font-weight:700":""}">${l}</span>`).join("")}<div style="margin-top:10px">${[["upInv","Mayúsculas en inventarios"],["upRep","Mayúsculas en reportes"]].map(([k,l])=>`<span class="chip" data-a="tgl" data-k="${k}" style="${S[k]?"border-color:var(--ac);color:var(--ac);font-weight:700":""}">${l}: ${S[k]?"Sí":"No"}</span>`).join("")}</div></div>
+  <div class="card"><b>Apariencia</b><div class="mu" style="margin:4px 0 8px">Oscuro viene por defecto.</div>${[["dark","Oscuro"],["light","Claro"],["auto","Automático"]].map(([k,l])=>`<span class="chip" data-a="theme" data-k="${k}" style="${(S.theme||"dark")===k?"border-color:var(--ac);color:var(--ac);font-weight:700":""}">${l}</span>`).join("")}<div style="margin-top:10px">${[["upInv","Mayúsculas en inventarios"],["upRep","Mayúsculas en reportes"],["cfq","Confirmar cambios de cantidad"],["srch","Hoja de buscador en el Excel"]].map(([k,l])=>`<span class="chip" data-a="tgl" data-k="${k}" style="${S[k]?"border-color:var(--ac);color:var(--ac);font-weight:700":""}">${l}: ${S[k]?"Sí":"No"}</span>`).join("")}</div></div>
   <div class="card"><b>Mis atajos</b><div class="mu" style="margin:4px 0 8px">Plantillas de campos para crear listas rápido. Toca uno para editarlo.</div>${S.presets.map(p=>`<span class="chip" data-a="edpre" data-id="${p.id}">${h(p.name)} ✎</span>`).join("")}<div style="margin-top:6px"><button class="s" data-a="newpre">+ Nuevo atajo</button></div></div>
   <div class="card"><b>Pasar mis plantillas a otro equipo</b><div class="mu" style="margin:4px 0 10px">Guarda tus listas (solo los campos, sin registros) y los tipos de reporte. En el otro teléfono o tablet, importas el archivo o pegas el texto.</div>
   <div class="row"><button class="p" data-a="expcfg">⬇ Descargar plantillas</button><button data-a="copycfg">Copiar código</button></div>
@@ -203,13 +241,15 @@ function vModal(){
   const m=V.modal;
   if(m.k==="cf")return `<div class="modal"><div class="sheet"><h2>${h(m.msg)}</h2>${m.word?`<input data-m="typed" placeholder="Escribe ${m.word}" autocomplete="off" style="margin-top:12px">`:""}<div class="row" style="margin-top:14px"><button class="p sp" data-a="cfok" ${m.word?'style="background:var(--dg);border-color:var(--dg);color:#fff"':""}>${m.word?"Sí, borrar":"Aceptar"}</button><button data-a="closem">Cancelar</button></div></div></div>`;
   if(m.k==="guide")return `<div class="modal"><div class="sheet"><h2>Cómo funciona</h2>${GUIDE.map(g=>`<details class="card"><summary><b>${h(g[0])}</b></summary><div style="margin-top:8px">${h(g[1])}</div></details>`).join("")}<button data-a="closem" style="width:100%">Cerrar</button></div></div>`;
-  if(m.k==="xsel"){const gs=[...S.groups.map(g=>[g.id,g.name,gc(g)]),["","Sin grupo","#94A3B8"]];
-    return `<div class="modal"><div class="sheet"><h2>Excel de varias listas</h2><div class="mu">Marca las listas que quieras. Cada una sale en su propia hoja del mismo archivo.</div>${gs.map(g=>{const L=S.tpls.filter(t=>(t.gid||"")===g[0]);if(!L.length)return"";const all=L.every(t=>m.sel[t.id]);return `<div class="row" style="margin-top:14px"><b>${h(g[1])}</b><div class="sp"></div><button class="s" data-a="xgrp" data-id="${g[0]}">${all?"Quitar todas":"Todas"}</button></div>${L.map(t=>`<div class="card row" data-a="xtog" data-id="${t.id}" style="cursor:pointer;border-left:6px solid ${g[2]};padding:12px"><span style="font-size:22px">${m.sel[t.id]?"☑":"☐"}</span><div class="sp"><b>${h(t.name)}</b><div class="mu">${(S.recs[t.id]||[]).length} registros</div></div></div>`).join("")}`}).join("")}<label>Nombre del archivo</label><input data-m="name" value="${h(m.name)}"><div class="row" style="margin-top:14px"><button class="p sp" data-a="xdo">⬇ Excel (${Object.keys(m.sel).filter(k=>m.sel[k]).length})</button><button class="sp" data-a="closem">Cancelar</button></div></div></div>`}
+  if(m.k==="xsel"){const gs=[...ordA(S.groups).map(g=>[g.id,g.name,gc(g)]),["","Sin grupo","#94A3B8"]];
+    return `<div class="modal"><div class="sheet"><h2>Excel de varias listas</h2><div class="mu">Marca las listas que quieras. Cada una sale en su propia hoja del mismo archivo.</div>${gs.map(g=>{const L=ordA(S.tpls.filter(t=>(t.gid||"")===g[0]));if(!L.length)return"";const all=L.every(t=>m.sel[t.id]);return `<div class="row" style="margin-top:14px"><b>${h(g[1])}</b><div class="sp"></div><button class="s" data-a="xgrp" data-id="${g[0]}">${all?"Quitar todas":"Todas"}</button></div>${L.map(t=>`<div class="card row" data-a="xtog" data-id="${t.id}" style="cursor:pointer;border-left:6px solid ${g[2]};padding:12px"><span style="font-size:22px">${m.sel[t.id]?"☑":"☐"}</span><div class="sp"><b>${h(t.name)}</b><div class="mu">${(S.recs[t.id]||[]).length} registros</div></div></div>`).join("")}`}).join("")}<div style="margin-top:12px"><span class="chip" data-a="tgl" data-k="srch" style="${S.srch?"border-color:var(--ac);color:var(--ac);font-weight:700":""}">🔎 Hoja de buscador en el Excel: ${S.srch?"Sí":"No"}</span></div><label>Nombre del archivo</label><input data-m="name" value="${h(m.name)}"><div class="row" style="margin-top:14px"><button class="p sp" data-a="xdo">⬇ Excel (${Object.keys(m.sel).filter(k=>m.sel[k]).length})</button><button class="sp" data-a="closem">Cancelar</button></div></div></div>`}
+  if(m.k==="l2p"){const tt=S.tpls.find(x=>x.id===m.tid);
+    return `<div class="modal"><div class="sheet"><h2>Atajo desde esta lista</h2><div class="mu">Usa los campos de «${h(tt.name)}» para crear un atajo nuevo o actualizar uno que ya tengas.</div><label>Nombre del atajo nuevo</label><input data-m="name" value="${h(m.name)}"><label>O actualizar uno que ya existe</label><select data-m="pid"><option value="">— Crear uno nuevo —</option>${S.presets.map(p=>`<option value="${p.id}" ${m.pid===p.id?"selected":""}>${h(p.name)}</option>`).join("")}</select><div class="row" style="margin-top:14px"><button class="p sp" data-a="l2psave">Guardar atajo</button><button class="sp" data-a="closem">Cancelar</button></div></div></div>`}
   if(m.k==="qty"){const tt=S.tpls.find(x=>x.id===m.tid),r=S.recs[tt.id].find(x=>x._id===m.rid);
-    return `<div class="modal"><div class="sheet"><h2>Cambiar cantidad</h2><div class="mu">${h(itemDesc(tt,r))}</div><input data-m="val" type="number" inputmode="decimal" value="${h(m.val)}" style="font-size:24px;text-align:center;margin:12px 0"><div class="row">${[-5,-1,1,5].map(n=>`<button class="sp" data-a="qadd" data-n="${n}">${n>0?"+":""}${n}</button>`).join("")}</div><div class="row" style="margin-top:14px"><button class="p sp" data-a="qsave">Guardar</button><button class="sp" data-a="closem">Cancelar</button></div></div></div>`}
-  if(m.k==="mv"){const {tt,q,r,lopts,same,tl}=mvInfo(m),gopts=[...S.groups.map(g=>[g.id,g.name]),["","Sin grupo"]];
-    return `<div class="modal"><div class="sheet"><h2>Mover</h2><div class="card">${tt.fields.map(f=>`<div class="kv"><span class="mu">${h(f.n)}</span><b>${h(r[f.id])}</b></div>`).join("")}</div><label>Sede destino</label><select data-m="to">${gopts.map(g=>`<option value="${g[0]}" ${(m.to||"")===g[0]?"selected":""}>${h(g[1])}</option>`).join("")}</select><label>Lista destino</label><select data-m="tl"><option value="">Escoge la lista</option>${lopts.map(x=>`<option value="${x.id}" ${tl===x.id?"selected":""}>${h(x.name)}</option>`).join("")}${same?"":`<option value="new" ${tl==="new"?"selected":""}>➕ Crear lista «${h(tt.name)}» en esa sede</option>`}</select>${q?`<label>¿Cuántos pasan? (disponible ${h(r[q.id]||0)})</label><input data-m="qty" type="number" inputmode="decimal" value="${h(m.qty)}">`:""}<div class="mu" style="margin-top:8px">Los campos que no existan en la lista destino se agregan solos.</div><div class="row" style="margin-top:14px"><button class="p sp" data-a="domove">Mover</button><button class="sp" data-a="closem">Cancelar</button></div></div></div>`}
-  if(m.k==="grp")return `<div class="modal"><div class="sheet"><h2>${m.id?"Renombrar grupo":"Nuevo grupo"}</h2><label>Nombre (ej: CDA)</label><input data-m="name" value="${h(m.name)}"><label>Color de la sede</label><div>${PAL.map(c=>`<span data-a="gcol" data-c="${c}" style="display:inline-block;width:44px;height:44px;border-radius:12px;margin:0 8px 8px 0;background:${c};cursor:pointer;${m.color===c?"outline:3px solid var(--tx);outline-offset:2px":""}"></span>`).join("")}</div>${m.id||!S.groups.length?"":`<label>Copiar las listas (sin registros) de otro grupo</label><select data-m="copy"><option value="">No, empezar vacío</option>${S.groups.map(g=>`<option value="${g.id}">${h(g.name)}</option>`).join("")}</select>`}<div class="row" style="margin-top:14px"><button class="p sp" data-a="savegrp">Guardar</button><button data-a="closem">Cancelar</button></div></div></div>`;
+    return `<div class="modal"><div class="sheet"><h2>Cambiar cantidad</h2><div class="mu">${h(itemDesc(tt,r))}</div><input data-m="val" type="number" inputmode="decimal" value="${h(m.val)}" style="font-size:24px;text-align:center;margin:12px 0"><div id="qsum" class="mu" style="text-align:center;margin-bottom:10px;min-height:20px">${qsum(m)}</div><div class="row">${[-5,-1,1,5].map(n=>`<button class="sp" data-a="qadd" data-n="${n}">${n>0?"+":""}${n}</button>`).join("")}</div><div class="row" style="margin-top:14px"><button class="p sp" data-a="qsave">✔ Confirmar cambio</button><button class="sp" data-a="closem">Cancelar</button></div></div></div>`}
+  if(m.k==="mv"){const {tt,q,r,lopts,same,tl}=mvInfo(m),gopts=[...ordA(S.groups).map(g=>[g.id,g.name]),["","Sin grupo"]];
+    return `<div class="modal"><div class="sheet"><h2>Mover</h2><div class="card">${tt.fields.map(f=>`<div class="kv"><span class="mu">${h(f.n)}</span><b>${h(r[f.id])}</b></div>`).join("")}</div><label>Grupo destino</label><select data-m="to">${gopts.map(g=>`<option value="${g[0]}" ${(m.to||"")===g[0]?"selected":""}>${h(g[1])}</option>`).join("")}</select><label>Lista destino</label><select data-m="tl"><option value="">Escoge la lista</option>${lopts.map(x=>`<option value="${x.id}" ${tl===x.id?"selected":""}>${h(x.name)}</option>`).join("")}${same?"":`<option value="new" ${tl==="new"?"selected":""}>➕ Crear lista «${h(tt.name)}» en ese grupo</option>`}</select>${q?`<label>¿Cuántos pasan? (disponible ${h(r[q.id]||0)})</label><input data-m="qty" type="number" inputmode="decimal" value="${h(m.qty)}">`:""}<div class="mu" style="margin-top:8px">Los campos que no existan en la lista destino se agregan solos.</div><div class="row" style="margin-top:14px"><button class="p sp" data-a="domove">Mover</button><button class="sp" data-a="closem">Cancelar</button></div></div></div>`}
+  if(m.k==="grp")return `<div class="modal"><div class="sheet"><h2>${m.id?"Renombrar grupo":"Nuevo grupo"}</h2><label>Nombre (ej: CDA)</label><input data-m="name" value="${h(m.name)}"><label>Color del grupo</label><div>${PAL.map(c=>`<span data-a="gcol" data-c="${c}" style="display:inline-block;width:44px;height:44px;border-radius:12px;margin:0 8px 8px 0;background:${c};cursor:pointer;${m.color===c?"outline:3px solid var(--tx);outline-offset:2px":""}"></span>`).join("")}</div>${m.id||!S.groups.length?"":`<label>Copiar las listas (sin registros) de otro grupo</label><select data-m="copy"><option value="">No, empezar vacío</option>${S.groups.map(g=>`<option value="${g.id}">${h(g.name)}</option>`).join("")}</select>`}<div class="row" style="margin-top:14px"><button class="p sp" data-a="savegrp">Guardar</button><button data-a="closem">Cancelar</button></div></div></div>`;
   if(m.k==="tpl")return `<div class="modal"><div class="sheet"><h2>${m.pre?(m.preid?"Editar atajo":"Nuevo atajo"):m.id?"Editar lista":"Nueva lista"}</h2>
   ${m.id||m.pre||!S.presets.length?"":`<div class="mu">Atajos:</div><div style="margin:6px 0">${S.presets.map(p=>`<span class="chip" data-a="preset" data-id="${p.id}">${h(p.name)}</span>`).join("")}</div>`}
   <label>Nombre de la lista</label><input data-m="name" value="${h(m.name)}" placeholder="Ej: Computadoras de delivery">${m.pre?"":`<label>Grupo</label><select data-m="gid"><option value="">Sin grupo</option>${S.groups.map(g=>`<option value="${g.id}" ${m.gid===g.id?"selected":""}>${h(g.name)}</option>`).join("")}</select>`}
@@ -258,7 +298,7 @@ function restoreAll(txt){
   try{const o=JSON.parse(txt);if(!o||o.app!=="invrep"||!Array.isArray(o.tpls))throw 0;
     let msg;
     if(mode==="replace"){
-      ask("Esto reemplaza TODO lo que hay en este equipo con el respaldo. ¿Continuar?",()=>{S=Object.assign(JSON.parse(JSON.stringify(DEF)),{tpls:o.tpls,recs:o.recs||{},rtypes:o.rtypes||DEF.rtypes,reps:o.reps||[],groups:o.groups||[],presets:o.presets||S.presets,moves:o.moves||[],lastBackup:S.lastBackup,theme:S.theme,upInv:S.upInv,upRep:S.upRep});V.draft.type=S.rtypes[0]||"";save();toast("Respaldo cargado")});render();return;
+      ask("Esto reemplaza TODO lo que hay en este equipo con el respaldo. ¿Continuar?",()=>{S=Object.assign(JSON.parse(JSON.stringify(DEF)),{tpls:o.tpls,recs:o.recs||{},rtypes:o.rtypes||DEF.rtypes,reps:o.reps||[],groups:o.groups||[],presets:o.presets||S.presets,moves:o.moves||[],lastBackup:S.lastBackup,theme:S.theme,upInv:S.upInv,upRep:S.upRep,ord:S.ord,cfq:S.cfq,srch:S.srch});V.draft.type=S.rtypes[0]||"";save();toast("Respaldo cargado")});render();return;
     }else msg="Agregado: "+mergeAll(o);
     V.draft.type=S.rtypes.includes(V.draft.type)?V.draft.type:(S.rtypes[0]||"");
     if(save()){render();toast(msg)}}
@@ -267,11 +307,13 @@ function restoreAll(txt){
 document.addEventListener("input",e=>{
   const t=e.target,m=V.modal;
   if(t.dataset.d)V.draft[t.dataset.d]=t.value;
-  if(m&&(m.k==="tpl"||m.k==="grp"||m.k==="mv"||m.k==="cf"||m.k==="qty"||m.k==="xsel")){if(t.dataset.m){m[t.dataset.m]=t.value;if(m.k==="mv"&&t.dataset.m==="to"){m.tl="";render()}}if(t.dataset.fi!==undefined){const f=m.fields[t.dataset.fi];f[t.dataset.p]=t.value;if(t.dataset.p==="t")render()}}
+  if(m&&(m.k==="tpl"||m.k==="grp"||m.k==="mv"||m.k==="cf"||m.k==="qty"||m.k==="xsel"||m.k==="l2p")){if(t.dataset.m){m[t.dataset.m]=t.value;if(m.k==="qty"){const e=$("#qsum");if(e)e.textContent=qsum(m)}if(m.k==="mv"&&t.dataset.m==="to"){m.tl="";render()}}if(t.dataset.fi!==undefined){const f=m.fields[t.dataset.fi];f[t.dataset.p]=t.value;if(t.dataset.p==="t")render()}}
 });
 document.addEventListener("change",async e=>{
   const t=e.target,a=t.dataset.a;
   if(a==="sortf"){const tt=S.tpls.find(x=>x.id===V.tpl);tt.sortF=t.value;save();render();return}
+  if(a==="ord"){S.ord=t.value;save();render();return}
+  if(a==="mfo"||a==="mfd"){V[a]=t.value;render();return}
   if(a==="filt"){V.filter=t.value;render();return}
   if(a==="photo"&&t.files.length){for(const f of [...t.files]){if(V.draft.photos.length>=5){toast("Máximo 5 fotos por reporte");break}V.draft.photos.push(await resize(f))}render()}
   if(a==="impfile"&&t.files[0]){importCfg(await t.files[0].text())}
@@ -280,11 +322,11 @@ document.addEventListener("change",async e=>{
 document.addEventListener("click",async e=>{
   const el=e.target.closest("[data-a]");if(!el||el.tagName==="INPUT"||el.tagName==="SELECT")return;
   const a=el.dataset.a,id=el.dataset.id,m=V.modal,t=S.tpls.find(x=>x.id===V.tpl);
-  if(a==="tab"){V.tab=el.dataset.k;V.tpl=null;V.moves=false;V.modal=null}
+  if(a==="tab"){V.pend={};V.tab=el.dataset.k;V.tpl=null;V.moves=false;V.modal=null}
   else if(a==="open")V.tpl=id;
   else if(a==="cfok"){if(m.word&&String(m.typed||"").trim().toUpperCase()!==m.word){toast("Escribe "+m.word+" para confirmar");return}const f=m.fn;V.modal=null;f()}
   else if(a==="opengrp")V.grp=id;
-  else if(a==="back"){if(V.moves)V.moves=false;else if(V.tpl)V.tpl=null;else V.grp=null}
+  else if(a==="back"){V.pend={};if(V.moves)V.moves=false;else if(V.tpl)V.tpl=null;else V.grp=null}
   else if(a==="newtpl")V.modal={k:"tpl",name:"",gid:V.grp==="none"?"":(V.grp||""),fields:[{n:"",t:"text",o:""}]};
   else if(a==="edtpl")V.modal={k:"tpl",id:t.id,name:t.name,gid:t.gid||"",fields:t.fields.map(f=>({...f}))};
   else if(a==="preset"){const P=S.presets.find(x=>x.id===id);m.name=m.name||P.name;m.fields=P.fields.map(f=>({n:f.n,t:f.t,o:f.o||""}))}
@@ -312,9 +354,14 @@ document.addEventListener("click",async e=>{
   else if(a==="xmulti")V.modal={k:"xsel",sel:{},name:"Inventario"};
   else if(a==="xtog")m.sel[id]=!m.sel[id];
   else if(a==="xgrp"){const L=S.tpls.filter(t=>(t.gid||"")===(id||"")),all=L.every(t=>m.sel[t.id]);L.forEach(t=>m.sel[t.id]=!all)}
-  else if(a==="xdo"){const L=S.tpls.filter(t=>m.sel[t.id]);if(!L.length){toast("Marca al menos una lista");return}const multi=new Set(L.map(t=>t.gid||"")).size>1,fn=(m.name||"Inventario").replace(/[\\\/:*?"<>|]/g,"").trim()||"Inventario";xl(L,fn+".xlsx",multi?(t=>gnm(t.gid)+" - "+t.name):null);toast("Preparando Excel…");V.modal=null}
+  else if(a==="xdo"){const L=S.tpls.filter(t=>m.sel[t.id]);if(!L.length){toast("Marca al menos una lista");return}const multi=new Set(L.map(t=>t.gid||"")).size>1,fn=(m.name||"Inventario").replace(/[\\\/:*?"<>|]/g,"").trim()||"Inventario";xl(L,fn+".xlsx",multi?(t=>gnm(t.gid)+" - "+t.name):null,S.srch);toast("Preparando Excel…");V.modal=null}
+  else if(a==="l2p")V.modal={k:"l2p",tid:t.id,name:t.name,pid:""};
+  else if(a==="l2psave"){const tt=S.tpls.find(x=>x.id===m.tid),fs=tt.fields.map(f=>({n:f.n,t:f.t,o:f.o||""}));
+    if(m.pid){const P=S.presets.find(x=>x.id===m.pid);P.fields=fs;toast("Atajo «"+P.name+"» actualizado")}
+    else{const n=U((m.name||"").trim());if(!n){toast("Ponle nombre al atajo");return}S.presets.push({id:uid(),name:n,fields:fs});toast("Atajo creado")}
+    save();V.modal=null}
   else if(a==="guide")V.modal={k:"guide"};
-  else if(a==="moves")V.moves=true;
+  else if(a==="moves"){V.moves=true;V.mfo="";V.mfd=""}
   else if(a==="mv")V.modal={k:"mv",tid:V.tpl,rid:id,qty:"",to:t.gid||"",tl:""};
   else if(a==="domove"){
     const {tt,q,r:rec,tl}=mvInfo(m);
@@ -338,13 +385,17 @@ document.addEventListener("click",async e=>{
       const dr={_id:uid()};pairs.forEach(p=>dr[p[1].id]=rec[p[0].id]||"");S.recs[dt.id].push(dr);
       S.recs[tt.id]=S.recs[tt.id].filter(x=>x._id!==rec._id);
     }
-    S.moves.push({id:uid(),date:new Date().toLocaleString("es-VE",{dateStyle:"short",timeStyle:"short"}),from:gnm(tt.gid)+" · "+tt.name,to:gnm(dt.gid)+" · "+dt.name,list:tt.name,item:itemDesc(tt,rec),qty:q?n:""});
+    S.moves.push({id:uid(),date:new Date().toLocaleString("es-VE",{dateStyle:"short",timeStyle:"short"}),fromG:gnm(tt.gid),toG:gnm(dt.gid),from:gnm(tt.gid)+" · "+tt.name,to:gnm(dt.gid)+" · "+dt.name,list:tt.name,item:itemDesc(tt,rec),qty:q?n:""});
     if(save()){V.modal=null;toast("Listo"+(added?" · se agregaron "+added+" campo(s) a la lista destino":""))}}
   else if(a==="fup"){const i=+el.dataset.i;if(i>0){const x=m.fields[i];m.fields[i]=m.fields[i-1];m.fields[i-1]=x}}
   else if(a==="fdn"){const i=+el.dataset.i;if(i<m.fields.length-1){const x=m.fields[i];m.fields[i]=m.fields[i+1];m.fields[i+1]=x}}
   else if(a==="sortd"){t.sortD=t.sortD==="desc"?"asc":"desc";save()}
-  else if(a==="qminus"||a==="qplus"){const q=t.fields.find(f=>f.t==="qty"),r=S.recs[t.id].find(x=>x._id===id);r[q.id]=String(Math.max(0,(parseFloat(r[q.id])||0)+(a==="qplus"?1:-1)));save()}
-  else if(a==="qset"){const q=t.fields.find(f=>f.t==="qty"),r=S.recs[t.id].find(x=>x._id===id);V.modal={k:"qty",tid:t.id,rid:id,val:String(parseFloat(r[q.id])||0)}}
+  else if(a==="qminus"||a==="qplus"){const q=t.fields.find(f=>f.t==="qty"),r=S.recs[t.id].find(x=>x._id===id),st=a==="qplus"?1:-1,cur=parseFloat(r[q.id])||0;
+    if(S.cfq===false){r[q.id]=String(Math.max(0,cur+st));save()}
+    else{V.pend=V.pend||{};const d=(V.pend[id]||0)+st;if(cur+d<0){toast("No hay tantas");return}if(d===0)delete V.pend[id];else V.pend[id]=d}}
+  else if(a==="qok"){const q=t.fields.find(f=>f.t==="qty"),r=S.recs[t.id].find(x=>x._id===id),d=pd(r);if(d){r[q.id]=String(Math.max(0,(parseFloat(r[q.id])||0)+d));delete V.pend[id];save();toast("Cantidad actualizada")}}
+  else if(a==="qno"){if(V.pend)delete V.pend[id]}
+  else if(a==="qset"){const q=t.fields.find(f=>f.t==="qty"),r=S.recs[t.id].find(x=>x._id===id);V.modal={k:"qty",tid:t.id,rid:id,old:String(parseFloat(r[q.id])||0),val:String(parseFloat(r[q.id])||0)}}
   else if(a==="qadd"){m.val=String(Math.max(0,(parseFloat(m.val)||0)+(+el.dataset.n)))}
   else if(a==="qsave"){const tt=S.tpls.find(x=>x.id===m.tid),q=tt.fields.find(f=>f.t==="qty"),r=S.recs[tt.id].find(x=>x._id===m.rid),n=parseFloat(m.val);if(isNaN(n)||n<0){toast("Cantidad no válida");return}r[q.id]=String(n);save();V.modal=null}
   else if(a==="tgl"){S[el.dataset.k]=!S[el.dataset.k];save()}
