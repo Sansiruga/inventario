@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Visor y centro de respaldo</title>
+<style>
+:root{--bg:#0f1115;--card:#1a1d23;--tx:#e6e8ec;--mu:#9aa3af;--ac:#60a5fa;--acx:#08121f;--bd:#2a2f38;--dg:#f87171;--ok:#4ade80;color-scheme:dark}
+:root[data-theme="light"]{--bg:#f4f7fc;--card:#fff;--tx:#1b1f24;--mu:#5b6677;--ac:#1d4ed8;--acx:#fff;--bd:#d9e0ea;--dg:#b42318;--ok:#15803d;color-scheme:light}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:10px 18px;background:var(--card);border-bottom:1px solid var(--bd);position:sticky;top:0;z-index:5}
+header b{font-size:17px}
+.wrap{display:grid;grid-template-columns:270px 1fr;min-height:calc(100vh - 58px)}
+aside{border-right:1px solid var(--bd);padding:12px 10px;overflow:auto}
+main{padding:22px 26px;min-width:0}
+@media(max-width:820px){.wrap{grid-template-columns:1fr}aside{border-right:0;border-bottom:1px solid var(--bd)}main{padding:16px}}
+h1{font-size:22px;margin:0 0 14px}h2{font-size:17px;margin:24px 0 10px}
+.mu{color:var(--mu)}.sp{flex:1}.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:14px 16px;margin-bottom:12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.grid .card{margin:0}
+button,select,input{font:inherit;color:var(--tx);background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:9px 14px}
+button{cursor:pointer}button:hover{border-color:var(--ac)}
+button.p{background:var(--ac);color:var(--acx);border-color:var(--ac);font-weight:600}
+button.d{color:var(--dg)}button.s{padding:6px 10px;font-size:13px}
+input{min-width:240px}
+.nav a{display:block;padding:8px 10px;border-radius:9px;cursor:pointer;color:var(--tx)}
+.nav a:hover{background:var(--bd)}.nav a.on{background:var(--bd);font-weight:600}
+.nav hr{border:0;border-top:1px solid var(--bd);margin:10px 0}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:8px}
+.tw{overflow:auto;border:1px solid var(--bd);border-radius:12px;background:var(--card)}
+table{border-collapse:collapse;width:100%}
+th,td{padding:9px 12px;border-bottom:1px solid var(--bd);text-align:left;vertical-align:top}
+th{position:sticky;top:0;background:var(--card);cursor:pointer;white-space:nowrap}
+tr:last-child td{border-bottom:0}
+tr.low td{background:rgba(248,113,113,.13)}
+.tag{display:inline-block;padding:2px 9px;border-radius:99px;border:1px solid var(--bd);font-size:12px;color:var(--mu)}
+.warn{color:var(--dg)}.ok{color:var(--ok)}
+.upi .inv,.upi aside{text-transform:uppercase}.upr .rep{text-transform:uppercase}
+#lb{position:fixed;inset:0;background:rgba(0,0,0,.85);display:none;align-items:center;justify-content:center;z-index:20;cursor:zoom-out}
+#lb img{max-width:94vw;max-height:94vh;border-radius:10px}
+#toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:10px 18px;border-radius:10px;z-index:30;display:none;max-width:90%}
+@media print{header,aside,.noprint{display:none!important}.wrap{display:block}body{background:#fff;color:#000}.card,.tw{border-color:#999;background:#fff}td,th{color:#000}}
+</style></head><body>
+<header><b>Visor y centro de respaldo</b><span id="info" class="mu"></span><span class="sp"></span>
+<button data-a="load">⬆ Cargar respaldo</button><button class="p" id="bDl">⬇ Descargar para el teléfono</button><button data-a="th" title="Cambiar tema">🌓</button><span class="mu" id="ver"></span></header>
+<input type="file" id="fi" accept=".json,application/json" multiple style="display:none">
+<div class="wrap"><aside id="side"></aside><main id="main"></main></div>
+<div id="lb"><img id="lbi" alt=""></div><div id="toast"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
+<script>
+const VER="1.0.0",SUP="1.10.0",KEEP={"sin fotos":7,"completo":3};
+const $=s=>document.querySelector(s);
+const h=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const nm=x=>String(x??"").trim().toLowerCase(),num=x=>parseFloat(x);
+let D=null,cur=null,BK=[],PH=[],V={k:"panel",id:"",q:"",sf:"",sd:1,mo:"",md:"",rt:"",cd:""};
+function toast(m){const t=$("#toast");t.textContent=m;t.style.display="block";clearTimeout(toast.t);toast.t=setTimeout(()=>t.style.display="none",3200)}
+
+/* ---------- almacenamiento local (IndexedDB) ---------- */
+const idb=()=>new Promise((ok,no)=>{const r=indexedDB.open("invrep_visor",1);r.onupgradeneeded=()=>r.result.createObjectStore("b",{keyPath:"id"});r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)});
+async function tx(mode,f){const d=await idb();return new Promise((ok,no)=>{const t=d.transaction("b",mode),q=f(t.objectStore("b"));t.oncomplete=()=>ok(q&&q.result);t.onerror=()=>no(t.error)})}
+
+/* ---------- datos ---------- */
+const vc=(a,b)=>{const x=String(a||"0").split(".").map(Number),y=String(b||"0").split(".").map(Number);for(let i=0;i<3;i++){const d=(x[i]||0)-(y[i]||0);if(d)return d}return 0};
+const fmt=ts=>new Date(ts).toLocaleString("es-VE",{dateStyle:"short",timeStyle:"short"});
+const kb=n=>n>1048576?(n/1048576).toFixed(1)+" MB":Math.max(1,Math.round(n/1024))+" KB";
+const ord=a=>D.ord==="az"?a.slice().sort((x,y)=>x.name.localeCompare(y.name,"es",{sensitivity:"base"})):D.ord==="za"?a.slice().sort((x,y)=>y.name.localeCompare(x.name,"es",{sensitivity:"base"})):a;
+const GS=()=>ord(D.groups||[]);
+const tplsOf=g=>ord((D.tpls||[]).filter(t=>g==="none"?!t.gid:t.gid===g));
+const gname=id=>id?((D.groups||[]).find(g=>g.id===id)||{name:"Sin grupo"}).name:"Sin grupo";
+const gcol=id=>((D.groups||[]).find(g=>g.id===id)||{}).color||"#94A3B8";
+const recs=t=>(D.recs||{})[t.id]||[];
+const qf=t=>t.fields.find(f=>f.t==="qty");
+const U=x=>D.upInv?String(x??"").toUpperCase():String(x??"");
+const isLow=(t,r)=>{const q=qf(t);if(!q)return false;const m=num(r._min);return !isNaN(m)&&(num(r[q.id])||0)<=m};
+const lows=()=>{const o=[];(D.tpls||[]).forEach(t=>recs(t).forEach(r=>{if(isLow(t,r))o.push({t,r})}));return o};
+const desc=(t,r)=>t.fields.filter(f=>f.t!=="qty").map(f=>r[f.id]).filter(Boolean).join(" · ");
+const ph=r=>r.photos||(r.photo?[r.photo]:[]);
+const mvG=(x,w)=>x[w+"G"]||String(x[w]||"").split(" · ")[0];
+const groupsAll=()=>[...GS().map(g=>[g.id,g.name]),...(tplsOf("none").length?[["none","Sin grupo"]]:[])];
+const curList=()=>(D.tpls||[]).find(x=>x.id===V.id);
+function stats(o){const r=Object.values(o.recs||{}).reduce((a,x)=>a+x.length,0);let f=0;(o.reps||[]).forEach(x=>{f+=ph(x).length});return{g:(o.groups||[]).length,l:o.tpls.length,r,rp:(o.reps||[]).length,f}}
+
+/* ---------- cargar / guardar respaldos ---------- */
+async function loadFiles(fs){
+  let ok=0,last=null;
+  for(const f of fs){
+    try{
+      const raw=await f.text(),o=JSON.parse(raw);
+      if(!o||o.app!=="invrep"||!Array.isArray(o.tpls))throw 0;
+      const saved=o.saved?Date.parse(o.saved):(f.lastModified||Date.now()),st=stats(o);
+      const rec={id:saved+"_"+raw.length,saved,ver:o.ver||"",size:raw.length,fname:f.name,tipo:st.f>0?"completo":"sin fotos",st,raw};
+      await tx("readwrite",s=>s.put(rec));last=rec.id;ok++;
+    }catch(e){toast("«"+f.name+"» no es un respaldo válido de la app")}
+  }
+  if(!ok)return;
+  await prune(last);await openBk(last);toast(ok+" respaldo(s) cargado(s)");
+}
+async function prune(keepId){
+  const all=(await tx("readonly",s=>s.getAll())).sort((a,b)=>b.saved-a.saved),n={};
+  for(const r of all){n[r.tipo]=(n[r.tipo]||0)+1;if(n[r.tipo]>(KEEP[r.tipo]||7)&&r.id!==keepId&&!(cur&&cur.id===r.id))await tx("readwrite",s=>s.delete(r.id))}
+  BK=(await tx("readonly",s=>s.getAll())).sort((a,b)=>b.saved-a.saved);
+}
+async function openBk(id){
+  const r=BK.find(x=>x.id===id)||BK[0];
+  if(!r){D=null;cur=null;render();return}
+  cur=r;D=JSON.parse(r.raw);localStorage.setItem("va",r.id);
+  document.body.className=(D.upInv?"upi ":"")+(D.upRep?"upr":"");
+  V={...V,k:"panel",id:"",q:"",cd:"",mo:"",md:"",rt:""};render();
+}
+function dlBlob(blob,name){const u=URL.createObjectURL(blob),a=document.createElement("a");a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000)}
+function dlBk(id){const r=BK.find(x=>x.id===id);if(!r)return;dlBlob(new Blob([r.raw],{type:"application/json"}),"respaldo-"+(r.tipo==="completo"?"completo-":"")+new Date(r.saved).toISOString().slice(0,10)+".json");toast("Descargando el respaldo para el teléfono")}
+
+/* ---------- Excel ---------- */
+function sheetName(n,used){const b=String(n).replace(/[\\\/?*\[\]:]/g,"").slice(0,28)||"Lista";let x=b,i=2;while(used.has(x.toLowerCase()))x=b+" "+(i++);used.add(x.toLowerCase());return x}
+async function xl(lists,fname,lbl){
+  if(!window.ExcelJS){toast("El Excel necesita internet la primera vez (para cargar la librería)");return}
+  const wb=new ExcelJS.Workbook(),used=new Set(),bd={style:"thin",color:{argb:"FFBFC5CC"}};
+  lists.forEach(t=>{
+    const A=[t.fields.map(f=>U(f.n)),...recs(t).map(r=>t.fields.map(f=>U(r[f.id]??"")))],gg=(D.groups||[]).find(g=>g.id===t.gid);
+    const ws=wb.addWorksheet(sheetName(lbl?lbl(t):t.name,used),{views:[{state:"frozen",ySplit:1}],properties:gg&&gg.color?{tabColor:{argb:"FF"+gg.color.slice(1)}}:{}});
+    ws.addRows(A);
+    A[0].forEach((_,i)=>{ws.getColumn(i+1).width=Math.min(45,Math.max(12,...A.map(r=>String(r[i]??"").length+3)))});
+    ws.autoFilter={from:{row:1,column:1},to:{row:1,column:A[0].length}};
+    ws.getRow(1).height=24;
+    ws.eachRow((row,n)=>row.eachCell(c=>{
+      c.border={top:bd,left:bd,bottom:bd,right:bd};c.alignment={vertical:"middle",wrapText:true};
+      if(n===1){c.font={bold:true,color:{argb:"FFFFFFFF"}};c.fill={type:"pattern",pattern:"solid",fgColor:{argb:"FF1F4E79"}};c.alignment={vertical:"middle",horizontal:"center",wrapText:true}}
+      else if(n%2===1)c.fill={type:"pattern",pattern:"solid",fgColor:{argb:"FFEAF1F8"}};
+    }));
+  });
+  try{dlBlob(new Blob([await wb.xlsx.writeBuffer()],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}),fname)}catch(e){toast("No se pudo crear el Excel")}
+}
+
+/* ---------- vistas ---------- */
+function head(){
+  $("#ver").textContent="v"+VER;
+  let t="Sin respaldo cargado";
+  if(cur){
+    const d=(Date.now()-cur.saved)/864e5;
+    t="Respaldo del "+fmt(cur.saved)+" · "+cur.tipo+" · app v"+(cur.ver||"?");
+    if(d>=1.5)t+=" · ⚠ tiene "+Math.floor(d)+" días";
+  }
+  $("#info").textContent=t;$("#bDl").style.display=cur?"":"none";
+}
+function side(){
+  const nav=(k,l)=>`<a class="${V.k===k?"on":""}" data-v="${k}">${l}</a>`;
+  let s=`<div class="nav">${D?nav("panel","🏠 Panel")+nav("moves","📦 Movimientos")+nav("reps","📝 Reportes"):""}${nav("bks","💾 Respaldos")}</div>`;
+  if(!D)return s;
+  return s+`<div class="nav inv"><hr>`+groupsAll().map(([id,n])=>`<a class="${V.k==="grp"&&V.id===id?"on":""}" data-v="grp" data-id="${id}"><span class="dot" style="background:${gcol(id)}"></span><b>${h(n)}</b></a>${tplsOf(id).map(t=>`<a style="padding-left:30px" class="${V.k==="list"&&V.id===t.id?"on":""}" data-v="list" data-id="${t.id}">${h(t.name)}</a>`).join("")}`).join("")+`</div>`;
+}
+function mvTable(a){
+  if(!a.length)return "";
+  return `<div class="tw inv"><table><thead><tr><th>Fecha</th><th>Qué</th><th>Origen</th><th>Destino</th></tr></thead><tbody>${a.map(x=>`<tr><td>${h(x.date)}</td><td>${x.qty!==""&&x.qty!=null?h(x.qty)+" × ":""}${h(x.list)}${x.item?" — "+h(x.item):""}</td><td>${h(x.from)}</td><td>${h(x.to)}</td></tr>`).join("")}</tbody></table></div>`;
+}
+const repCard=r=>`<div class="card rep"><b>${h(r.type)}</b> <span class="mu">${h(r.date)}${r.equipo?" · "+h(r.equipo):""}</span><div style="margin-top:6px;white-space:pre-wrap">${h(r.desc)}</div>${ph(r).length?`<div class="row" style="margin-top:8px">${ph(r).map(u=>{PH.push(u);return `<img src="${u}" data-a="lb" data-i="${PH.length-1}" alt="foto del reporte" style="height:110px;border-radius:8px;cursor:zoom-in">`}).join("")}</div>`:""}${r.fotosBorradas&&!ph(r).length?`<div class="mu" style="margin-top:6px">📷 ${r.fotosBorradas} foto(s) eliminada(s)</div>`:""}</div>`;
+function vPanel(){
+  const L=lows(),mv=(D.moves||[]).slice(-8).reverse(),rp=(D.reps||[]).slice(-6).reverse(),st=cur.st||stats(D),d=(Date.now()-cur.saved)/864e5;
+  let alert="";
+  if(d>=1.5)alert+=`<div class="warn">⚠ Este respaldo tiene ${Math.floor(d)} días. Carga uno más reciente.</div>`;
+  if(cur.ver&&vc(cur.ver,SUP)>0)alert+=`<div class="warn">⚠ Es de la app v${h(cur.ver)}, más nueva que este visor (soporta hasta v${SUP}). Se puede ver y descargar, pero puede faltar algo.</div>`;
+  if(cur.tipo!=="completo")alert+=`<div class="mu">Este respaldo no trae fotos. Para tenerlas aquí, haz un respaldo completo en el teléfono.</div>`;
+  return `<h1>Panel</h1>
+  <div class="card"><div class="row"><div class="sp"><b>Respaldo activo</b><div class="mu">${fmt(cur.saved)} · ${h(cur.tipo)} · ${kb(cur.size)} · app v${h(cur.ver||"?")}</div><div class="mu">${st.g} grupos · ${st.l} listas · ${st.r} registros · ${st.rp} reportes · ${st.f} fotos</div></div><button class="p" id="bDl2" data-a="dlcur">⬇ Descargar para el teléfono</button></div>${alert?`<div style="margin-top:10px">${alert}</div>`:""}</div>
+  <div class="grid inv">${groupsAll().map(([id,n])=>{const T=tplsOf(id);return `<div class="card" style="border-left:6px solid ${gcol(id)};cursor:pointer" data-v="grp" data-id="${id}"><b>${h(n)}</b><div class="mu">${T.length} listas · ${T.reduce((a,t)=>a+recs(t).length,0)} registros</div></div>`}).join("")}</div>
+  ${L.length?`<h2 class="warn">⚠ Poco stock (${L.length})</h2><div class="tw inv"><table><tbody>${L.map(x=>`<tr><td>${h(desc(x.t,x.r)||x.t.name)}</td><td>${h(gname(x.t.gid))} · ${h(x.t.name)}</td><td><b>quedan ${h(x.r[qf(x.t).id]||0)}</b> (mínimo ${h(x.r._min)})</td></tr>`).join("")}</tbody></table></div>`:""}
+  <h2>Últimos movimientos</h2>${mvTable(mv)||'<div class="mu">Todavía no hay movimientos.</div>'}
+  <h2>Últimos reportes</h2>${rp.length?rp.map(repCard).join(""):'<div class="mu">Todavía no hay reportes.</div>'}`;
+}
+function tableHTML(t){
+  let rows=recs(t).slice();const q=nm(V.q);
+  if(q)rows=rows.filter(r=>t.fields.some(f=>nm(r[f.id]).includes(q)));
+  const f=t.fields.find(x=>x.id===V.sf);
+  if(f){const n=f.t==="number"||f.t==="qty";rows.sort((a,b)=>V.sd*(n?(num(a[f.id])||0)-(num(b[f.id])||0):String(a[f.id]??"").localeCompare(String(b[f.id]??""),"es",{numeric:true,sensitivity:"base"})))}
+  return `<div class="tw"><table><thead><tr>${t.fields.map(x=>`<th data-a="sort" data-f="${x.id}">${h(x.n)} ${V.sf===x.id?(V.sd>0?"▲":"▼"):""}</th>`).join("")}</tr></thead><tbody>${rows.map(r=>`<tr class="${isLow(t,r)?"low":""}">${t.fields.map(x=>`<td>${h(r[x.id])}${x.t==="qty"&&isLow(t,r)?" ⚠":""}</td>`).join("")}</tr>`).join("")||`<tr><td colspan="${t.fields.length}" class="mu">No hay registros${q?" con esa búsqueda":""}.</td></tr>`}</tbody></table></div><div class="mu" style="margin-top:6px">${rows.length} de ${recs(t).length} registros</div>`;
+}
+function vList(t){
+  return `<div class="inv"><h1><span class="dot" style="background:${gcol(t.gid)}"></span>${h(gname(t.gid))} › ${h(t.name)}</h1><div class="row noprint"><input id="q" placeholder="Buscar en esta lista" value="${h(V.q)}"><span class="sp"></span><button data-a="xlsx">⬇ Excel</button><button data-a="print">🖨 Imprimir</button></div><div id="tbl" style="margin-top:12px">${tableHTML(t)}</div></div>`;
+}
+function vGrp(id){
+  const T=tplsOf(id);
+  return `<div class="inv"><h1><span class="dot" style="background:${gcol(id)}"></span>${h(gname(id))}</h1><div class="row noprint" style="margin-bottom:14px"><button data-a="xlsxg">⬇ Excel del grupo</button><button data-a="print">🖨 Imprimir</button></div><div class="grid">${T.map(t=>`<div class="card" style="cursor:pointer" data-v="list" data-id="${t.id}"><b>${h(t.name)}</b><div class="mu">${t.fields.length} campos · ${recs(t).length} registros${recs(t).some(r=>isLow(t,r))?' · <span class="warn">⚠ poco stock</span>':""}</div></div>`).join("")||'<div class="mu">Este grupo no tiene listas.</div>'}</div></div>`;
+}
+function vMoves(){
+  const gs=w=>[...new Set((D.moves||[]).map(x=>mvG(x,w)))].sort((a,b)=>a.localeCompare(b,"es")),
+  L=(D.moves||[]).filter(x=>(!V.mo||mvG(x,"from")===V.mo)&&(!V.md||mvG(x,"to")===V.md)).slice().reverse(),
+  op=(w,c)=>gs(w).map(g=>`<option ${c===g?"selected":""}>${h(g)}</option>`).join("");
+  return `<h1>Movimientos entre grupos</h1><div class="row noprint" style="margin-bottom:12px"><label class="mu">Origen <select data-s="mo"><option value="">Todos</option>${op("from",V.mo)}</select></label><label class="mu">Destino <select data-s="md"><option value="">Todos</option>${op("to",V.md)}</select></label><span class="mu">${L.length} movimiento(s)</span></div>${mvTable(L)||'<div class="card mu">No hay movimientos con ese filtro.</div>'}`;
+}
+function vReps(){
+  const types=[...new Set((D.reps||[]).map(r=>r.type))].sort((a,b)=>a.localeCompare(b,"es")),L=(D.reps||[]).filter(r=>!V.rt||r.type===V.rt).slice().reverse();
+  return `<h1>Reportes</h1><div class="row noprint" style="margin-bottom:12px"><select data-s="rt"><option value="">Todos los tipos (${(D.reps||[]).length})</option>${types.map(t=>`<option value="${h(t)}" ${V.rt===t?"selected":""}>${h(t)} (${D.reps.filter(r=>r.type===t).length})</option>`).join("")}</select></div>${L.map(repCard).join("")||'<div class="card mu">No hay reportes de ese tipo.</div>'}`;
+}
+function vBks(){
+  const rows=BK.map(r=>`<tr><td>${fmt(r.saved)}${cur&&cur.id===r.id?' <span class="tag ok">activo</span>':""}</td><td>${h(r.tipo)}</td><td>v${h(r.ver||"?")}</td><td>${r.st?`${r.st.l} listas · ${r.st.r} registros · ${r.st.rp} reportes · ${r.st.f} fotos`:""}</td><td>${kb(r.size)}</td><td><div class="row"><button class="s" data-a="bopen" data-id="${r.id}">Abrir</button><button class="s" data-a="bdl" data-id="${r.id}">⬇ Descargar</button><button class="s d" data-a="bdel" data-id="${r.id}">${V.cd===r.id?"¿Seguro? Toca otra vez":"Borrar"}</button></div></td></tr>`).join("");
+  return `<h1>Respaldos guardados</h1><div class="card"><div class="row"><div class="sp mu">Aquí se guardan los últimos 7 respaldos sin fotos y los últimos 3 completos. Si cargas uno nuevo, el más viejo de su tipo se borra solo.</div><button class="p" data-a="load">⬆ Cargar respaldo</button></div></div>
+  ${BK.length?`<div class="tw"><table><thead><tr><th>Fecha</th><th>Tipo</th><th>App</th><th>Contenido</th><th>Tamaño</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`:'<div class="card mu">Todavía no has cargado ningún respaldo.</div>'}
+  <h2>Si cambias de teléfono o se te daña</h2>
+  <div class="card"><ol style="margin:0;padding-left:20px"><li>En el teléfono nuevo, abre el enlace de la app y ábrela desde su icono.</li><li>Aquí, escoge el respaldo que quieras y toca <b>⬇ Descargar</b>. Lo ideal es el completo más reciente, si quieres las fotos.</li><li>Pásalo al teléfono (por Gmail, WhatsApp, Drive o cable).</li><li>En la app: <b>Ajustes → Cargar respaldo de otro equipo</b>, escoge <b>Reemplazar todo lo de este equipo</b> y selecciona el archivo.</li></ol></div>
+  <div class="card mu">Estos respaldos viven en el navegador de esta computadora. Si borras los datos del navegador se pierden, así que guarda también los archivos originales (Gmail o Drive).</div>`;
+}
+function welcome(){
+  return `<h1>Bienvenido</h1><div class="card"><b>Carga tu primer respaldo</b><ol style="padding-left:20px"><li>En el teléfono: Ajustes → <b>Respaldo sin fotos</b> (o el completo, si quieres las fotos).</li><li>Envíatelo por Gmail y descárgalo en esta computadora.</li><li>Aquí toca <b>Cargar respaldo</b>, o arrastra el archivo a esta ventana.</li></ol><button class="p" data-a="load">⬆ Cargar respaldo</button></div>`;
+}
+function render(){
+  PH=[];head();
+  $("#side").innerHTML=side();
+  let m;
+  if(V.k==="bks")m=vBks();
+  else if(!D)m=welcome();
+  else if(V.k==="list"&&curList())m=vList(curList());
+  else if(V.k==="grp")m=vGrp(V.id);
+  else if(V.k==="moves")m=vMoves();
+  else if(V.k==="reps")m=vReps();
+  else m=vPanel();
+  $("#main").innerHTML=m;
+}
+
+/* ---------- eventos ---------- */
+document.addEventListener("click",async e=>{
+  const v=e.target.closest("[data-v]");
+  if(v&&!e.target.closest("[data-a]")){
+    V={...V,k:v.dataset.v,id:v.dataset.id||"",q:"",cd:""};
+    if(V.k==="list"){const t=curList();V.sf=(t&&t.sortF)||"";V.sd=t&&t.sortD==="desc"?-1:1}
+    render();scrollTo(0,0);return;
+  }
+  const a=e.target.closest("[data-a]");if(!a)return;
+  const k=a.dataset.a,id=a.dataset.id;
+  if(k==="load")$("#fi").click();
+  else if(k==="sort"){const f=a.dataset.f;if(V.sf===f)V.sd=-V.sd;else{V.sf=f;V.sd=1}$("#tbl").innerHTML=tableHTML(curList())}
+  else if(k==="xlsx"){const t=curList();xl([t],gname(t.gid)+" - "+t.name+".xlsx")}
+  else if(k==="xlsxg"){const L=tplsOf(V.id);if(L.length)xl(L,gname(V.id)+".xlsx")}
+  else if(k==="print")print();
+  else if(k==="lb"){$("#lbi").src=PH[+a.dataset.i];$("#lb").style.display="flex"}
+  else if(k==="bopen")await openBk(id);
+  else if(k==="bdl")dlBk(id);
+  else if(k==="dlcur"){if(cur)dlBk(cur.id)}
+  else if(k==="bdel"){
+    if(V.cd===id){
+      await tx("readwrite",s=>s.delete(id));BK=BK.filter(x=>x.id!==id);V.cd="";
+      if(cur&&cur.id===id){cur=null;D=null;if(BK[0])await openBk(BK[0].id)}
+      toast("Respaldo borrado");render();
+    }else{V.cd=id;render();setTimeout(()=>{if(V.cd===id){V.cd="";render()}},3500)}
+  }
+  else if(k==="th"){const r=document.documentElement;r.dataset.theme=r.dataset.theme==="light"?"dark":"light";localStorage.setItem("vt",r.dataset.theme)}
+});
+document.addEventListener("change",e=>{
+  const t=e.target;
+  if(t.dataset&&t.dataset.s){V[t.dataset.s]=t.value;render()}
+  if(t.id==="fi"){loadFiles([...t.files]);t.value=""}
+});
+document.addEventListener("input",e=>{if(e.target.id==="q"){V.q=e.target.value;$("#tbl").innerHTML=tableHTML(curList())}});
+document.addEventListener("dragover",e=>e.preventDefault());
+document.addEventListener("drop",e=>{e.preventDefault();if(e.dataTransfer&&e.dataTransfer.files.length)loadFiles([...e.dataTransfer.files])});
+$("#lb").onclick=()=>{$("#lb").style.display="none"};
+$("#bDl").onclick=()=>{if(cur)dlBk(cur.id)};
+
+(async()=>{
+  const t=localStorage.getItem("vt");if(t)document.documentElement.dataset.theme=t;
+  try{BK=(await tx("readonly",s=>s.getAll())).sort((a,b)=>b.saved-a.saved)}catch(e){toast("No pude abrir el almacenamiento del navegador")}
+  const va=localStorage.getItem("va");
+  if(BK.length)await openBk(BK.some(x=>x.id===va)?va:BK[0].id);else render();
+  if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
+})();
+</script></body></html>
