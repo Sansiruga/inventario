@@ -1,19 +1,27 @@
-const C="invrep-1.13.0",XL="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js";
-const FILES=["./","index.html","visor.html","manifest.webmanifest","icon-192.png","icon-512.png"];
+const C="invrep-1.13.1",XL="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js";
+const REQ=["./","index.html"],OPT=["visor.html","manifest.webmanifest","icon-192.png","icon-512.png"];
 self.addEventListener("install",e=>{e.waitUntil((async()=>{
-  const c=await caches.open(C);await Promise.all(FILES.map(async f=>c.put(f,await fetch(f,{cache:"reload"}))));
+  const c=await caches.open(C);
+  for(const f of REQ){const r=await fetch(f,{cache:"reload"});if(!r.ok)throw new Error("no se pudo bajar "+f);await c.put(f,r)}
+  for(const f of OPT){try{const r=await fetch(f,{cache:"reload"});if(r.ok)await c.put(f,r)}catch(x){}}
   try{await c.put(XL,await fetch(XL,{mode:"no-cors"}))}catch(x){}
   self.skipWaiting()})())});
 self.addEventListener("activate",e=>{e.waitUntil((async()=>{
   for(const k of await caches.keys())if(k!==C)await caches.delete(k);
   await self.clients.claim()})())});
 self.addEventListener("fetch",e=>{
-  if(e.request.method!=="GET")return;
+  const rq=e.request;if(rq.method!=="GET")return;
+  const same=new URL(rq.url).origin===self.location.origin;
   e.respondWith((async()=>{
-    const m=await caches.match(e.request,{ignoreSearch:true});
-    if(m)return m;
-    try{const r=await fetch(e.request);
-      if(r&&(r.ok||r.type==="opaque")){const c=await caches.open(C);c.put(e.request,r.clone())}
-      return r}
-    catch(x){if(e.request.mode==="navigate")return caches.match("index.html");throw x}
+    const c=await caches.open(C);
+    if(same){
+      /* con internet: siempre lo más nuevo. Sin internet: la copia guardada */
+      try{const r=await fetch(rq.url,{cache:"no-cache"});if(r&&r.ok)c.put(rq.url,r.clone());return r}
+      catch(x){
+        const m=await c.match(rq.url,{ignoreSearch:true});if(m)return m;
+        if(rq.mode==="navigate"){const i=await c.match("index.html");if(i)return i}
+        throw x}
+    }
+    const m=await c.match(rq);if(m)return m;
+    const r=await fetch(rq);if(r&&(r.ok||r.type==="opaque"))c.put(rq,r.clone());return r;
   })())});

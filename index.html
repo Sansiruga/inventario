@@ -40,7 +40,7 @@ img.ph{max-width:100%;max-height:220px;border-radius:10px;margin-top:8px}
 <div class="ver" id="ver"></div><main id="app"></main><nav id="nav"></nav><div id="toast"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
 <script>
-const VERSION="1.13.0";
+const VERSION="1.13.1";
 const GUIDE=[
 ["Inventarios","Aquí llevas el control de lo que hay. Todo se organiza así: grupo → lista (computadoras, toners…) → registros (cada equipo o artículo)."],
 ["Grupos y colores","Crea un grupo por cada lugar (por ejemplo CDA, CDB). Al crearlo escoges su color y, si quieres, copias las listas de otro grupo para no armarlas de nuevo. Con «Renombrar / color» lo cambias después."],
@@ -53,6 +53,7 @@ const GUIDE=[
 ["Mayúsculas","En Ajustes → Apariencia puedes activar o desactivar las mayúsculas en inventarios y en reportes."],
 ["Borrar con seguridad","Borrar una lista o un grupo pide dos verificaciones: primero confirmas, y luego tienes que escribir BORRAR."],
 ["Importar un Excel o CSV","En Inventarios toca «⬆ Importar Excel o CSV» (o «⬆ Excel» dentro de una lista para agregarle filas). Escoge el archivo .xlsx o .csv, la hoja y si la primera fila trae los títulos. Para una lista nueva, escoges el tipo de cada columna (texto, número o cantidad). Para una lista que ya existe, cada columna va a una casilla tuya, se crea una casilla nueva o no se importa. «Evitar duplicados» salta las filas que ya tienes."],
+["Actualizar la app","Cuando abres la app con internet, siempre trae la versión más nueva; sin internet usa la copia que tiene guardada. Si ves un número de versión viejo en la esquina, ve a Ajustes → «🔄 Buscar actualización»: recarga la app desde internet sin tocar tus datos."],
 ["Excel","En cada lista, «⬇ Excel» baja esa lista. Dentro de un grupo, «⬇ Excel del grupo» baja un solo archivo con una hoja por cada lista. Y con «⬇ Excel de varias listas», en la pantalla de Inventarios, marcas las listas que quieras (de cualquier grupo) y las bajas juntas en un mismo archivo, una hoja por lista. Si activas «🔎 Hoja de buscador», el Excel de un grupo o de varias listas trae una primera hoja BUSCADOR: escribes lo que buscas en la celda amarilla y salen todas las coincidencias de todas las hojas, con un enlace «Ir →» a cada registro. Funciona al abrir el archivo en Excel o LibreOffice con la edición activada. Hay que haber abierto la app con internet al menos una vez."],
 ["Reportes","En la pestaña Reportes escoges el tipo y pones equipo y descripción. Con «📷 Tomar foto» abres la cámara directo, y con «🖼 Galería» eliges fotos que ya tienes. Puedes poner hasta 5 fotos por reporte. «Compartir por WhatsApp» abre el menú del teléfono con todo listo; «Copiar texto» es el respaldo si las fotos no se adjuntan. Los tipos de reporte los manejas en Ajustes."],
 ["Fotos y espacio","Las fotos se reducen solas para que pesen poco, pero el espacio del navegador es limitado (unas 30 fotos en total). En Ajustes → Fotos de reportes ves cuánto ocupan y puedes borrar las de reportes viejos: el texto del reporte se queda y solo se quita la foto."],
@@ -62,7 +63,7 @@ const GUIDE=[
 ["Dónde se guardan los datos","Viven en el navegador de este equipo, no en internet. Por eso cada equipo guarda lo suyo y el respaldo es tu seguro. Si se borran los datos de Chrome, se pierden."],
 ["Apariencia y versión","En Ajustes escoges Oscuro, Claro o Automático. El número de versión sale en la esquina: si subes cambios y ese número cambia, ya cargó la actualización."]
 ];
-const LOG=[["1.13.0","Importar Excel o CSV y elegir qué agregar de un respaldo de otro teléfono"],["1.12.0","Al crear campos, se muestran los campos que ya usaste en otras listas"],["1.11.0","Descripción en las listas y casillas que no coinciden al mover (agregar, no llevar o pasar a otra casilla)"],["1.10.0","Hoja de buscador opcional en el Excel y confirmación de cambios de cantidad"],["1.9.0","Atajo desde una lista, orden alfabético, filtro de movimientos y textos «grupo»"],["1.8.0","Excel de varias listas en un solo archivo"],["1.7.0","Mover entre listas y sedes, orden, alerta de poco stock, sugerencias, flechas, mayúsculas y borrado con doble verificación"],["1.6.0","Botón de cámara, varias fotos por reporte, borrar fotos viejas y respaldo sin fotos"],["1.5.0","Guía de uso y movimientos de cantidades entre sedes"],["1.4.0","Tema oscuro grafito, colores por sede, botones más grandes y Excel azul"],["1.3.1","Confirmaciones dentro de la app (arregla borrar) y Excel con diseño"],["1.3.0","Grupos (sedes), atajos editables y Excel por grupo"],["1.2.2","Se muestra la versión en la esquina"],["1.2.1","Corrección para que las actualizaciones se carguen"],["1.2.0","Filtro de reportes por tipo"],["1.1.0","Combinar respaldos y recordatorio semanal"],["1.0.0","Inventarios, reportes y exportar a Excel"]];
+const LOG=[["1.13.1","La app siempre busca la versión más nueva y botón «Buscar actualización»"],["1.13.0","Importar Excel o CSV y elegir qué agregar de un respaldo de otro teléfono"],["1.12.0","Al crear campos, se muestran los campos que ya usaste en otras listas"],["1.11.0","Descripción en las listas y casillas que no coinciden al mover (agregar, no llevar o pasar a otra casilla)"],["1.10.0","Hoja de buscador opcional en el Excel y confirmación de cambios de cantidad"],["1.9.0","Atajo desde una lista, orden alfabético, filtro de movimientos y textos «grupo»"],["1.8.0","Excel de varias listas en un solo archivo"],["1.7.0","Mover entre listas y sedes, orden, alerta de poco stock, sugerencias, flechas, mayúsculas y borrado con doble verificación"],["1.6.0","Botón de cámara, varias fotos por reporte, borrar fotos viejas y respaldo sin fotos"],["1.5.0","Guía de uso y movimientos de cantidades entre sedes"],["1.4.0","Tema oscuro grafito, colores por sede, botones más grandes y Excel azul"],["1.3.1","Confirmaciones dentro de la app (arregla borrar) y Excel con diseño"],["1.3.0","Grupos (sedes), atajos editables y Excel por grupo"],["1.2.2","Se muestra la versión en la esquina"],["1.2.1","Corrección para que las actualizaciones se carguen"],["1.2.0","Filtro de reportes por tipo"],["1.1.0","Combinar respaldos y recordatorio semanal"],["1.0.0","Inventarios, reportes y exportar a Excel"]];
 const KEY="invrep_v1";
 const DEF={tpls:[],recs:{},rtypes:["Error de sistema de facturación","Error de caja","Falla de equipo","Otro"],reps:[],groups:[],presets:null,moves:[],upInv:true,upRep:false,ord:"orig",cfq:true,srch:false,theme:"dark",lastBackup:"",snooze:""};
 let S;try{S=JSON.parse(localStorage.getItem(KEY))||null}catch(e){S=null}
@@ -166,6 +167,11 @@ function parseCsv(t){t=t.replace(/^\ufeff/,"");const first=t.split(/\r?\n/)[0]||
   if(cur!==""||row.length){row.push(cur.trim());rows.push(row)}
   return rows.slice(0,5001)}
 function sheetRows(ws){const out=[],nc=Math.min(ws.columnCount||0,60);ws.eachRow({includeEmpty:true},row=>{if(out.length>5000)return;const r=[];for(let c=1;c<=nc;c++){const cell=row.getCell(c),v=cell.value;r.push(v==null?"":typeof v==="number"?String(v):String(cell.text==null?"":cell.text).trim())}out.push(r)});return out}
+async function forceUpdate(){
+  toast("Actualizando…");
+  try{if(navigator.serviceWorker){for(const r of await navigator.serviceWorker.getRegistrations())await r.unregister()}if(window.caches){for(const k of await caches.keys())await caches.delete(k)}}catch(e){}
+  location.reload();
+}
 async function readXl(f){
   const m=V.modal;if(!m||m.k!=="imp")return;
   try{
@@ -340,7 +346,7 @@ function vCfg(){
   <label>Importar: pega el código aquí</label><textarea id="imp" placeholder="Pega aquí el código copiado"></textarea>
   <div class="row" style="margin-top:8px"><button data-a="impTxt">Importar código</button></div>
   <label>o escoge el archivo .json</label><input type="file" accept=".json,application/json" data-a="impfile"></div>
-  <div class="card"><b>Versión ${VERSION}</b>${LOG.map(l=>`<div class="kv"><span class="mu">${l[0]}</span><span>${h(l[1])}</span></div>`).join("")}</div>
+  <div class="card"><b>Versión ${VERSION}</b><div class="row" style="margin:8px 0"><button class="s" data-a="upd">🔄 Buscar actualización</button><span class="mu sp">Recarga la app desde internet. No toca tus datos.</span></div>${LOG.map(l=>`<div class="kv"><span class="mu">${l[0]}</span><span>${h(l[1])}</span></div>`).join("")}</div>
   <div class="card"><b>Respaldo completo</b><div class="mu" style="margin:4px 0 4px">Último respaldo: ${S.lastBackup||"nunca"}. La app te lo recuerda los viernes.</div><div class="mu" style="margin:0 0 10px">Sin fotos es liviano y sirve para la rutina semanal. El completo incluye las fotos y pesa más.</div><div class="row"><button class="p" data-a="expnp">⬇ Respaldo sin fotos</button><button data-a="expall">⬇ Respaldo completo</button></div></div>
   <div class="card"><b>Fotos de reportes</b><div class="mu" style="margin:4px 0 10px">${photoStats().n} fotos guardadas · unos ${photoStats().mb} MB. El espacio del navegador es limitado (~5 MB en total).</div><label>Borrar las fotos de reportes con más de…</label><select id="pdays"><option value="7">7 días</option><option value="15">15 días</option><option value="30" selected>30 días</option><option value="60">60 días</option><option value="90">90 días</option></select><div class="row" style="margin-top:10px"><button data-a="delph">Borrar fotos viejas</button><button class="d" data-a="delphall">Borrar todas</button></div></div>
   <div class="card"><b>Cargar respaldo de otro equipo</b><label>¿Cómo cargarlo?</label><select id="rmode"><option value="pick">Elegir qué agregar (sin borrar nada)</option><option value="merge">Combinar todo (sin borrar nada)</option><option value="replace">Reemplazar todo lo de este equipo</option></select><label>Escoge el archivo de respaldo (.json). Si es «sin fotos», no trae las fotos.</label><input type="file" data-a="restorefile"></div>`;
@@ -493,6 +499,7 @@ document.addEventListener("click",async e=>{
   else if(a==="pall"){m.sl={};Object.keys(m.sx).forEach(k=>m.sx[k]=true)}
   else if(a==="pnone"){m.o.tpls.forEach(t=>m.sl[t.id]=false);Object.keys(m.sx).forEach(k=>m.sx[k]=false)}
   else if(a==="pickok"){applyPick(m)}
+  else if(a==="upd"){forceUpdate();return}
   else if(a==="guide")V.modal={k:"guide"};
   else if(a==="moves"){V.moves=true;V.mfo="";V.mfd=""}
   else if(a==="mv")V.modal={k:"mv",tid:V.tpl,rid:id,qty:"",to:t.gid||"",tl:""};
