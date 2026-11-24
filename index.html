@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="es"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Inventario y Reportes</title>
+<title>Inventario</title>
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#0f1115">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -33,14 +33,13 @@ nav button.on{color:var(--ac);font-weight:700}
 #toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:10px 16px;border-radius:10px;z-index:30;display:none;max-width:90%}
 .ver{position:fixed;top:calc(env(safe-area-inset-top,0px) + 4px);right:8px;font-size:11px;color:var(--mu);opacity:.7;pointer-events:none;z-index:5}
 .upi .card b,.upi .kv,.upi h1,.upi .chip,.upi input:not([type=file]),.upi textarea,.upi option{text-transform:uppercase}
-.upr .card,.upr input:not([type=file]),.upr textarea{text-transform:uppercase}
 .upi textarea.nouc{text-transform:none}
 img.ph{max-width:100%;max-height:220px;border-radius:10px;margin-top:8px}
 </style></head><body>
 <div class="ver" id="ver"></div><main id="app"></main><nav id="nav"></nav><div id="toast"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
 <script>
-const VERSION="1.13.1";
+const VERSION="2.0.0";
 const GUIDE=[
 ["Inventarios","Aquí llevas el control de lo que hay. Todo se organiza así: grupo → lista (computadoras, toners…) → registros (cada equipo o artículo)."],
 ["Grupos y colores","Crea un grupo por cada lugar (por ejemplo CDA, CDB). Al crearlo escoges su color y, si quieres, copias las listas de otro grupo para no armarlas de nuevo. Con «Renombrar / color» lo cambias después."],
@@ -50,29 +49,27 @@ const GUIDE=[
 ["Mover entre listas y grupos","Cada registro tiene el botón «Mover»: escoges el grupo y la lista destino (por ejemplo, de «PC en uso» a «PC dañadas», o de CDA a CDB). Si las casillas de las dos listas no coinciden, la app te muestra cuáles son y tú escoges qué hacer con cada una: agregarla a la lista destino, no llevarla, o pasar su valor a otra casilla del destino (por ejemplo, de RAM a MEMORIA). Si la lista tiene un campo Cantidad (stock), dices cuántos pasan: se resta en el origen y se suma en el destino. Todo queda en «Movimientos entre grupos», donde puedes filtrar por grupo de origen y de destino."],
 ["Cantidad rápida y poco stock","En las listas con campo Cantidad, usa − y + para ajustar de uno en uno: el cambio queda pendiente y tienes que tocar «✔ Confirmar» (o «Cancelar») para que se guarde, así no se cambia nada por un toque accidental. También puedes tocar el número para escribir otro valor o sumar/restar 5, y lo confirmas. Si prefieres que cambie directo, apaga «Confirmar cambios de cantidad» en Ajustes. Al agregar o editar un registro puedes poner «Avisar cuando queden» (mínimo, por artículo): si la cantidad llega a ese número o baja de él, el registro se marca en rojo y sale un aviso arriba en Inventarios."],
 ["Ordenar y recordar","En cada lista, «Ordenar» te deja escoger el campo (nombre, modelo, ubicación…) y la dirección A→Z o Z→A. Al escribir en un campo de texto, la app te sugiere lo que ya has puesto antes. Al crear o editar campos, usa las flechas ↑ ↓ para cambiar su posición. En Inventarios y dentro de cada grupo hay un selector «Ordenar» para ver los grupos y las listas de la A a la Z, de la Z a la A, o como los creaste."],
-["Mayúsculas","En Ajustes → Apariencia puedes activar o desactivar las mayúsculas en inventarios y en reportes."],
+["Mayúsculas","En Ajustes → Apariencia puedes activar o desactivar las mayúsculas del inventario."],
 ["Borrar con seguridad","Borrar una lista o un grupo pide dos verificaciones: primero confirmas, y luego tienes que escribir BORRAR."],
 ["Importar un Excel o CSV","En Inventarios toca «⬆ Importar Excel o CSV» (o «⬆ Excel» dentro de una lista para agregarle filas). Escoge el archivo .xlsx o .csv, la hoja y si la primera fila trae los títulos. Para una lista nueva, escoges el tipo de cada columna (texto, número o cantidad). Para una lista que ya existe, cada columna va a una casilla tuya, se crea una casilla nueva o no se importa. «Evitar duplicados» salta las filas que ya tienes."],
 ["Actualizar la app","Cuando abres la app con internet, siempre trae la versión más nueva; sin internet usa la copia que tiene guardada. Si ves un número de versión viejo en la esquina, ve a Ajustes → «🔄 Buscar actualización»: recarga la app desde internet sin tocar tus datos."],
+["Los reportes","Los reportes ahora tienen su propia app, «Reportes». Si todavía te quedan reportes viejos guardados aquí, en Ajustes aparece la tarjeta «Reportes viejos»: los exportas para la otra app y, cuando confirmes que ya están allá, los borras de aquí."],
 ["Excel","En cada lista, «⬇ Excel» baja esa lista. Dentro de un grupo, «⬇ Excel del grupo» baja un solo archivo con una hoja por cada lista. Y con «⬇ Excel de varias listas», en la pantalla de Inventarios, marcas las listas que quieras (de cualquier grupo) y las bajas juntas en un mismo archivo, una hoja por lista. Si activas «🔎 Hoja de buscador», el Excel de un grupo o de varias listas trae una primera hoja BUSCADOR: escribes lo que buscas en la celda amarilla y salen todas las coincidencias de todas las hojas, con un enlace «Ir →» a cada registro. Funciona al abrir el archivo en Excel o LibreOffice con la edición activada. Hay que haber abierto la app con internet al menos una vez."],
-["Reportes","En la pestaña Reportes escoges el tipo y pones equipo y descripción. Con «📷 Tomar foto» abres la cámara directo, y con «🖼 Galería» eliges fotos que ya tienes. Puedes poner hasta 5 fotos por reporte. «Compartir por WhatsApp» abre el menú del teléfono con todo listo; «Copiar texto» es el respaldo si las fotos no se adjuntan. Los tipos de reporte los manejas en Ajustes."],
-["Fotos y espacio","Las fotos se reducen solas para que pesen poco, pero el espacio del navegador es limitado (unas 30 fotos en total). En Ajustes → Fotos de reportes ves cuánto ocupan y puedes borrar las de reportes viejos: el texto del reporte se queda y solo se quita la foto."],
-["Historial y filtro","Los reportes guardados quedan en el Historial. El selector de arriba filtra por tipo y muestra cuántos hay de cada uno."],
-["Respaldos","En Ajustes hay dos: «Respaldo sin fotos» (liviano, es el de la rutina semanal) y «Respaldo completo» (con las fotos, pesa más). La app te recuerda hacer el sin fotos los viernes (o si pasaron 7 días). Para cargarlo en otro equipo: «Elegir qué agregar» te deja marcar qué grupos, listas, reportes y demás quieres traer, sin borrar lo tuyo (sirve para el respaldo de otro teléfono); «Combinar todo» trae todo sin borrar nada; «Reemplazar» deja el equipo igual al respaldo."],
-["Pasar plantillas a otro equipo","«Descargar plantillas» o «Copiar código» pasa tus grupos, listas, atajos y tipos de reporte (sin registros) a otro equipo."],
+["Respaldos","En Ajustes, «⬇ Descargar respaldo» guarda todo en un archivo. La app te recuerda hacerlo los viernes (o si pasaron 7 días). Para cargarlo en otro equipo: «Elegir qué agregar» te deja marcar qué grupos y listas quieres traer, sin borrar lo tuyo (sirve para el respaldo de otro teléfono); «Combinar todo» trae todo sin borrar nada; «Reemplazar» deja el equipo igual al respaldo."],
+["Pasar plantillas a otro equipo","«Descargar plantillas» o «Copiar código» pasa tus grupos, listas y atajos (sin registros) a otro equipo."],
 ["Dónde se guardan los datos","Viven en el navegador de este equipo, no en internet. Por eso cada equipo guarda lo suyo y el respaldo es tu seguro. Si se borran los datos de Chrome, se pierden."],
 ["Apariencia y versión","En Ajustes escoges Oscuro, Claro o Automático. El número de versión sale en la esquina: si subes cambios y ese número cambia, ya cargó la actualización."]
 ];
-const LOG=[["1.13.1","La app siempre busca la versión más nueva y botón «Buscar actualización»"],["1.13.0","Importar Excel o CSV y elegir qué agregar de un respaldo de otro teléfono"],["1.12.0","Al crear campos, se muestran los campos que ya usaste en otras listas"],["1.11.0","Descripción en las listas y casillas que no coinciden al mover (agregar, no llevar o pasar a otra casilla)"],["1.10.0","Hoja de buscador opcional en el Excel y confirmación de cambios de cantidad"],["1.9.0","Atajo desde una lista, orden alfabético, filtro de movimientos y textos «grupo»"],["1.8.0","Excel de varias listas en un solo archivo"],["1.7.0","Mover entre listas y sedes, orden, alerta de poco stock, sugerencias, flechas, mayúsculas y borrado con doble verificación"],["1.6.0","Botón de cámara, varias fotos por reporte, borrar fotos viejas y respaldo sin fotos"],["1.5.0","Guía de uso y movimientos de cantidades entre sedes"],["1.4.0","Tema oscuro grafito, colores por sede, botones más grandes y Excel azul"],["1.3.1","Confirmaciones dentro de la app (arregla borrar) y Excel con diseño"],["1.3.0","Grupos (sedes), atajos editables y Excel por grupo"],["1.2.2","Se muestra la versión en la esquina"],["1.2.1","Corrección para que las actualizaciones se carguen"],["1.2.0","Filtro de reportes por tipo"],["1.1.0","Combinar respaldos y recordatorio semanal"],["1.0.0","Inventarios, reportes y exportar a Excel"]];
+const LOG=[["2.0.0","La app queda solo para inventario: los reportes pasan a su propia app («Reportes»)"],["1.13.1","La app siempre busca la versión más nueva y botón «Buscar actualización»"],["1.13.0","Importar Excel o CSV y elegir qué agregar de un respaldo de otro teléfono"],["1.12.0","Al crear campos, se muestran los campos que ya usaste en otras listas"],["1.11.0","Descripción en las listas y casillas que no coinciden al mover (agregar, no llevar o pasar a otra casilla)"],["1.10.0","Hoja de buscador opcional en el Excel y confirmación de cambios de cantidad"],["1.9.0","Atajo desde una lista, orden alfabético, filtro de movimientos y textos «grupo»"],["1.8.0","Excel de varias listas en un solo archivo"],["1.7.0","Mover entre listas y sedes, orden, alerta de poco stock, sugerencias, flechas, mayúsculas y borrado con doble verificación"],["1.6.0","Botón de cámara, varias fotos por reporte, borrar fotos viejas y respaldo sin fotos"],["1.5.0","Guía de uso y movimientos de cantidades entre sedes"],["1.4.0","Tema oscuro grafito, colores por sede, botones más grandes y Excel azul"],["1.3.1","Confirmaciones dentro de la app (arregla borrar) y Excel con diseño"],["1.3.0","Grupos (sedes), atajos editables y Excel por grupo"],["1.2.2","Se muestra la versión en la esquina"],["1.2.1","Corrección para que las actualizaciones se carguen"],["1.2.0","Filtro de reportes por tipo"],["1.1.0","Combinar respaldos y recordatorio semanal"],["1.0.0","Inventarios, reportes y exportar a Excel"]];
 const KEY="invrep_v1";
 const DEF={tpls:[],recs:{},rtypes:["Error de sistema de facturación","Error de caja","Falla de equipo","Otro"],reps:[],groups:[],presets:null,moves:[],upInv:true,upRep:false,ord:"orig",cfq:true,srch:false,theme:"dark",lastBackup:"",snooze:""};
 let S;try{S=JSON.parse(localStorage.getItem(KEY))||null}catch(e){S=null}
 S=Object.assign(JSON.parse(JSON.stringify(DEF)),S||{});
-let V={mfo:"",mfd:"",grp:null,filter:"",tab:"inv",tpl:null,modal:null,draft:{type:"",photos:[],desc:"",equipo:""}};
+let V={mfo:"",mfd:"",grp:null,tab:"inv",tpl:null,modal:null};
 const $=s=>document.querySelector(s);
 const h=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const uid=()=>Math.random().toString(36).slice(2,9);
-function save(){try{localStorage.setItem(KEY,JSON.stringify(S));return true}catch(e){toast("No hay espacio para guardar. Borra fotos viejas en Ajustes");return false}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));return true}catch(e){toast("No hay espacio para guardar."+(S.reps&&S.reps.length?" Borra los reportes viejos en Ajustes":""));return false}}
 function toast(m){const t=$("#toast");t.textContent=m;t.style.display="block";clearTimeout(toast.t);toast.t=setTimeout(()=>t.style.display="none",2600)}
 const PRESETS={"Computadoras":["Nombre","Marca","Procesador","RAM","Almacenamiento","Ubicación"],"Teléfonos":["Nombre","Marca","Modelo","RAM","Almacenamiento","Número"],"Toner":["Marca","Compatibilidad","Color","Cantidad"]};
 if(!Array.isArray(S.presets))S.presets=Object.keys(PRESETS).map(k=>({id:"p_"+k,name:k,fields:PRESETS[k].map(n=>({n,t:n==="Cantidad"?"qty":"text",o:""}))}));
@@ -135,22 +132,20 @@ const exportXlsx=t=>xl([t],gname(t)+t.name+".xlsx");
 
 const ymd=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")};
 function due(){
-  if(!S.tpls.length&&!S.reps.length)return false;
+  if(!S.tpls.length)return false;
   const t=ymd();if(S.snooze===t)return false;if(!S.lastBackup)return true;
   const days=(new Date(t+"T00:00:00")-new Date(S.lastBackup+"T00:00:00"))/864e5;
   return days>=7||(new Date().getDay()===5&&S.lastBackup!==t);
 }
 const ph=r=>r.photos||(r.photo?[r.photo]:[]);
-const thumbs=(a,rm)=>a.length?`<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">${a.map((u,i)=>`<span style="position:relative"><img src="${u}" style="height:90px;border-radius:10px;display:block">${rm?`<span data-a="rmph" data-i="${i}" style="position:absolute;top:-6px;right:-6px;background:var(--dg);color:#fff;border-radius:50%;width:26px;height:26px;text-align:center;line-height:26px;cursor:pointer">✕</span>`:""}</span>`).join("")}</div>`:"";
-function repTime(r){if(r.ts)return r.ts;const m=/(\d{1,2})\/(\d{1,2})\/(\d{2,4})/.exec(r.date||"");if(!m)return null;const y=+m[3]<100?2000+ +m[3]:+m[3];return new Date(y,+m[2]-1,+m[1]).getTime()}
 function photoStats(){let n=0,b=0;S.reps.forEach(r=>ph(r).forEach(u=>{n++;b+=u.length*.75}));return{n,mb:(b/1048576).toFixed(1)}}
-function banner(){return due()?`<div class="card" style="border-color:var(--ac)"><b>💾 ¿Hacemos el respaldo semanal?</b><div class="mu" style="margin:4px 0 10px">${S.lastBackup?"Último respaldo: "+S.lastBackup:"Todavía no has hecho ningún respaldo."}</div><div class="row"><button class="p" data-a="bkp">Respaldo sin fotos</button><button data-a="snooze">Más tarde</button></div></div>`:""}
-function doBackup(withPhotos){const D=withPhotos?S:{...S,reps:S.reps.map(r=>({...r,photo:undefined,photos:[],fotosBorradas:(r.fotosBorradas||0)+ph(r).length}))};dl("respaldo-"+(withPhotos?"completo-":"")+ymd()+".json",new Blob([JSON.stringify({app:"invrep",...D,lastBackup:ymd(),ver:VERSION,saved:new Date().toISOString()})],{type:"application/json"}));S.lastBackup=ymd();save()}
+function banner(){return due()?`<div class="card" style="border-color:var(--ac)"><b>💾 ¿Hacemos el respaldo semanal?</b><div class="mu" style="margin:4px 0 10px">${S.lastBackup?"Último respaldo: "+S.lastBackup:"Todavía no has hecho ningún respaldo."}</div><div class="row"><button class="p" data-a="bkp">Hacer respaldo</button><button data-a="snooze">Más tarde</button></div></div>`:""}
+function doBackup(){dl("respaldo-"+ymd()+".json",new Blob([JSON.stringify({app:"invrep",...S,lastBackup:ymd(),ver:VERSION,saved:new Date().toISOString()})],{type:"application/json"}));S.lastBackup=ymd();save()}
 function render(){
   const _sh=$(".sheet"),_st=_sh?_sh.scrollTop:0;
-  $("#nav").innerHTML=[["inv","📦 Inventarios"],["rep","📝 Reportes"],["cfg","⚙️ Ajustes"]].map(([k,l])=>`<button class="${V.tab===k?"on":""}" data-a="tab" data-k="${k}">${l}</button>`).join("");
-  $("#app").className=(V.tab==="inv"&&S.upInv?"upi":"")+(V.tab==="rep"&&S.upRep?" upr":"");
-  $("#app").innerHTML=banner()+(V.tab==="inv"?lowBanner():"")+(V.tab==="inv"?vInv():V.tab==="rep"?vRep():vCfg())+(V.modal?vModal():"");
+  $("#nav").innerHTML=[["inv","📦 Inventarios"],["cfg","⚙️ Ajustes"]].map(([k,l])=>`<button class="${V.tab===k?"on":""}" data-a="tab" data-k="${k}">${l}</button>`).join("");
+  $("#app").className=(V.tab==="inv"&&S.upInv?"upi":"");
+  $("#app").innerHTML=banner()+(V.tab==="inv"?lowBanner():"")+(V.tab==="inv"?vInv():vCfg())+(V.modal?vModal():"");
   const _n=$(".sheet");if(_n&&_st)_n.scrollTop=_st;
 }
 function applyTheme(){const t=S.theme||"dark",r=document.documentElement;if(t==="auto")r.removeAttribute("data-theme");else r.setAttribute("data-theme",t)}
@@ -259,12 +254,10 @@ function applyPick(m){
     src.forEach(r=>{const n={_id:ids.has(r._id)?uid():r._id};t.fields.forEach(f=>{n[fmap[f.id].id]=r[f.id]});if(r._min!=null)n._min=r._min;
       const k=keyOf(n);if(ids.has(r._id)||seen.has(k)){st.dup++;return}seen.add(k);S.recs[mine.id].push(n);st.r++});
   });
-  if(m.sx.reps)(o.reps||[]).forEach(r=>{if(!S.reps.some(x=>x.id===r.id)){S.reps.push(r);st.rp++}});
   if(m.sx.moves)(o.moves||[]).forEach(x=>{if(!S.moves.some(y=>y.id===x.id))S.moves.push(x)});
   if(m.sx.presets)(o.presets||[]).forEach(p=>{if(!S.presets.some(x=>x.id===p.id||nm(x.name)===nm(p.name)))S.presets.push(p)});
-  if(m.sx.rtypes)(o.rtypes||[]).forEach(t=>{if(!S.rtypes.includes(t))S.rtypes.push(t)});
   if(!save()){S=JSON.parse(snap);toast("No hay espacio para agregar todo eso. No se cambió nada");return false}
-  V.modal=null;toast("Agregado: "+st.l+" lista(s) nueva(s), "+st.r+" registro(s), "+st.rp+" reporte(s)"+(st.dup?" · "+st.dup+" ya existían":""));return true;
+  V.modal=null;toast("Agregado: "+st.l+" lista(s) nueva(s), "+st.r+" registro(s)"+(st.dup?" · "+st.dup+" ya existían":""));return true;
 }
 function fieldCat(){const mp=new Map();S.tpls.map(t=>t.fields).forEach(fs=>fs.forEach(f=>{const k=nm(f.n);if(!k)return;const c=mp.get(k);if(c)c.c++;else mp.set(k,{k,n:f.n,t:f.t,o:f.o||"",c:1})}));return[...mp.values()].sort((a,b)=>b.c-a.c||a.n.localeCompare(b.n,"es"))}
 const prevChips=m=>{const have=new Set(m.fields.map(f=>nm(f.n))),L=fieldCat().filter(c=>!have.has(c.k));return L.length?`<div class="mu" style="margin-top:14px">Campos que ya has usado (toca para agregar):</div><div style="margin-top:8px;max-height:170px;overflow:auto">${L.map(c=>`<span class="chip" data-a="addprev" data-k="${h(c.k)}">${h(c.n)}${c.t==="qty"?" 📦":c.t==="number"?" #":c.t==="select"?" ▾":""}</span>`).join("")}</div>`:""};
@@ -323,33 +316,18 @@ function vList(){
     return `<div class="card"${low?' style="border-color:var(--dg)"':""}>${t.fields.map(f=>f.t==="qty"?`<div class="kv" style="align-items:center"><span class="mu">${h(f.n)}</span><span class="row" style="flex-wrap:nowrap"><button class="s" data-a="qminus" data-id="${r._id}">−</button><b data-a="qset" data-id="${r._id}" style="min-width:52px;text-align:center;font-size:22px;cursor:pointer">${h(r[f.id]||0)}</b>${pd(r)?`<span style="color:var(--ac);font-weight:700">→ ${(parseFloat(r[f.id])||0)+pd(r)}</span>`:""}<button class="s" data-a="qplus" data-id="${r._id}">+</button></span></div>`:`<div class="kv"><span class="mu">${h(f.n)}</span><b>${h(r[f.id])}</b></div>`).join("")}${pd(r)?`<div class="row" style="margin-top:8px"><button class="p sp" data-a="qok" data-id="${r._id}">✔ Confirmar ${pd(r)<0?"quitar "+(-pd(r)):"agregar "+pd(r)}</button><button data-a="qno" data-id="${r._id}">Cancelar</button></div>`:""}${low?`<div style="color:var(--dg);font-weight:600;margin-top:6px">⚠ Quedan pocos (avisar a ${h(r._min)})</div>`:""}<div class="row" style="margin-top:10px"><button class="s" data-a="mv" data-id="${r._id}">Mover</button><button class="s" data-a="edrec" data-id="${r._id}">Editar</button><button class="s d" data-a="delrec" data-id="${r._id}">Borrar</button></div></div>`}).join(""):`<div class="card mu">Sin registros todavía.</div>`)+
   `<div class="row" style="margin-top:14px"><button class="s d" data-a="deltpl">Borrar esta lista</button></div>`;
 }
-function filt(){
-  const ts=[...new Set([...S.rtypes,...S.reps.map(r=>r.type)])];
-  return `<select data-a="filt" style="margin-bottom:6px"><option value="">Todos los tipos (${S.reps.length})</option>${ts.map(t=>`<option value="${h(t)}" ${V.filter===t?"selected":""}>${h(t)} (${S.reps.filter(r=>r.type===t).length})</option>`).join("")}</select>`}
-function vRep(){
-  const d=V.draft,R=S.reps.filter(r=>!V.filter||r.type===V.filter);
-  return `<h1>Reportes</h1><div class="card">
-  <label>Tipo de reporte</label><select data-d="type">${S.rtypes.map(t=>`<option ${d.type===t?"selected":""}>${h(t)}</option>`).join("")}</select>
-  <label>Fotos del error (hasta 5)</label><div class="row"><button class="sp" data-a="cam">📷 Tomar foto</button><button class="sp" data-a="gal">🖼 Galería</button></div><input id="fcam" type="file" accept="image/*" capture="environment" data-a="photo" style="display:none"><input id="fgal" type="file" accept="image/*" multiple data-a="photo" style="display:none">${thumbs(d.photos,true)}
-  <label>Equipo (opcional)</label><input data-d="equipo" value="${h(d.equipo)}" placeholder="Ej: Caja 2, PC delivery 1">
-  <label>Descripción</label><textarea data-d="desc" placeholder="¿Qué está pasando?">${h(d.desc)}</textarea>
-  <div class="row" style="margin-top:12px"><button class="p sp" data-a="share">Compartir por WhatsApp</button><button data-a="copy">Copiar texto</button></div>
-  <div class="row" style="margin-top:8px"><button class="s" data-a="saverep">Guardar en historial</button><button class="s d" data-a="clrdraft">Limpiar</button></div></div>
-  <h2>Historial</h2>`+filt()+(R.length?R.slice().reverse().map(r=>`<div class="card"><b>${h(r.type)}</b><div class="mu">${h(r.date)}${r.equipo?" · "+h(r.equipo):""}</div><div>${h(r.desc)}</div>${thumbs(ph(r),false)}${r.fotosBorradas&&!ph(r).length?`<div class="mu" style="margin-top:6px">📷 ${r.fotosBorradas} foto(s) eliminada(s)</div>`:""}<div class="row" style="margin-top:8px"><button class="s" data-a="resend" data-id="${r.id}">Reenviar</button><button class="s d" data-a="delrep" data-id="${r.id}">Borrar</button></div></div>`).join(""):`<div class="mu">${S.reps.length?"No hay reportes de este tipo.":"Aún no hay reportes guardados."}</div>`);
-}
 function vCfg(){
-  return `<h1>Ajustes</h1><button class="p" data-a="guide" style="width:100%;margin-bottom:12px">📖 Cómo funciona (guía de uso)</button><div class="card"><b>Tipos de reporte</b><div class="mu" style="margin:4px 0 8px">Toca uno para borrarlo.</div>${S.rtypes.map((t,i)=>`<span class="chip" data-a="deltype" data-i="${i}">${h(t)} ✕</span>`).join("")}<div class="row"><input class="sp" id="nt" placeholder="Nuevo tipo de reporte"><button data-a="addtype">Agregar</button></div></div>
-  <div class="card"><b>Apariencia</b><div class="mu" style="margin:4px 0 8px">Oscuro viene por defecto.</div>${[["dark","Oscuro"],["light","Claro"],["auto","Automático"]].map(([k,l])=>`<span class="chip" data-a="theme" data-k="${k}" style="${(S.theme||"dark")===k?"border-color:var(--ac);color:var(--ac);font-weight:700":""}">${l}</span>`).join("")}<div style="margin-top:10px">${[["upInv","Mayúsculas en inventarios"],["upRep","Mayúsculas en reportes"],["cfq","Confirmar cambios de cantidad"],["srch","Hoja de buscador en el Excel"]].map(([k,l])=>`<span class="chip" data-a="tgl" data-k="${k}" style="${S[k]?"border-color:var(--ac);color:var(--ac);font-weight:700":""}">${l}: ${S[k]?"Sí":"No"}</span>`).join("")}</div></div>
+  return `<h1>Ajustes</h1><button class="p" data-a="guide" style="width:100%;margin-bottom:12px">📖 Cómo funciona (guía de uso)</button><div class="card"><b>Apariencia</b><div class="mu" style="margin:4px 0 8px">Oscuro viene por defecto.</div>${[["dark","Oscuro"],["light","Claro"],["auto","Automático"]].map(([k,l])=>`<span class="chip" data-a="theme" data-k="${k}" style="${(S.theme||"dark")===k?"border-color:var(--ac);color:var(--ac);font-weight:700":""}">${l}</span>`).join("")}<div style="margin-top:10px">${[["upInv","Mayúsculas en inventarios"],["cfq","Confirmar cambios de cantidad"],["srch","Hoja de buscador en el Excel"]].map(([k,l])=>`<span class="chip" data-a="tgl" data-k="${k}" style="${S[k]?"border-color:var(--ac);color:var(--ac);font-weight:700":""}">${l}: ${S[k]?"Sí":"No"}</span>`).join("")}</div></div>
   <div class="card"><b>Mis atajos</b><div class="mu" style="margin:4px 0 8px">Plantillas de campos para crear listas rápido. Toca uno para editarlo.</div>${S.presets.map(p=>`<span class="chip" data-a="edpre" data-id="${p.id}">${h(p.name)} ✎</span>`).join("")}<div style="margin-top:6px"><button class="s" data-a="newpre">+ Nuevo atajo</button></div></div>
-  <div class="card"><b>Pasar mis plantillas a otro equipo</b><div class="mu" style="margin:4px 0 10px">Guarda tus listas (solo los campos, sin registros) y los tipos de reporte. En el otro teléfono o tablet, importas el archivo o pegas el texto.</div>
+  <div class="card"><b>Pasar mis plantillas a otro equipo</b><div class="mu" style="margin:4px 0 10px">Guarda tus grupos, listas (solo los campos, sin registros) y atajos. En el otro teléfono o tablet, importas el archivo o pegas el texto.</div>
   <div class="row"><button class="p" data-a="expcfg">⬇ Descargar plantillas</button><button data-a="copycfg">Copiar código</button></div>
   <label>Importar: pega el código aquí</label><textarea id="imp" placeholder="Pega aquí el código copiado"></textarea>
   <div class="row" style="margin-top:8px"><button data-a="impTxt">Importar código</button></div>
   <label>o escoge el archivo .json</label><input type="file" accept=".json,application/json" data-a="impfile"></div>
   <div class="card"><b>Versión ${VERSION}</b><div class="row" style="margin:8px 0"><button class="s" data-a="upd">🔄 Buscar actualización</button><span class="mu sp">Recarga la app desde internet. No toca tus datos.</span></div>${LOG.map(l=>`<div class="kv"><span class="mu">${l[0]}</span><span>${h(l[1])}</span></div>`).join("")}</div>
-  <div class="card"><b>Respaldo completo</b><div class="mu" style="margin:4px 0 4px">Último respaldo: ${S.lastBackup||"nunca"}. La app te lo recuerda los viernes.</div><div class="mu" style="margin:0 0 10px">Sin fotos es liviano y sirve para la rutina semanal. El completo incluye las fotos y pesa más.</div><div class="row"><button class="p" data-a="expnp">⬇ Respaldo sin fotos</button><button data-a="expall">⬇ Respaldo completo</button></div></div>
-  <div class="card"><b>Fotos de reportes</b><div class="mu" style="margin:4px 0 10px">${photoStats().n} fotos guardadas · unos ${photoStats().mb} MB. El espacio del navegador es limitado (~5 MB en total).</div><label>Borrar las fotos de reportes con más de…</label><select id="pdays"><option value="7">7 días</option><option value="15">15 días</option><option value="30" selected>30 días</option><option value="60">60 días</option><option value="90">90 días</option></select><div class="row" style="margin-top:10px"><button data-a="delph">Borrar fotos viejas</button><button class="d" data-a="delphall">Borrar todas</button></div></div>
-  <div class="card"><b>Cargar respaldo de otro equipo</b><label>¿Cómo cargarlo?</label><select id="rmode"><option value="pick">Elegir qué agregar (sin borrar nada)</option><option value="merge">Combinar todo (sin borrar nada)</option><option value="replace">Reemplazar todo lo de este equipo</option></select><label>Escoge el archivo de respaldo (.json). Si es «sin fotos», no trae las fotos.</label><input type="file" data-a="restorefile"></div>`;
+  <div class="card"><b>Respaldo</b><div class="mu" style="margin:4px 0 10px">Último respaldo: ${S.lastBackup||"nunca"}. La app te lo recuerda los viernes.</div><button class="p" data-a="expall">⬇ Descargar respaldo</button></div>
+  ${S.reps&&S.reps.length?`<div class="card"><b>Reportes viejos</b><div class="mu" style="margin:4px 0 10px">Los reportes ahora viven en la app «Reportes». Aquí te quedan ${S.reps.length} reporte(s) de antes (${photoStats().n} fotos, unos ${photoStats().mb} MB). Expórtalos, cárgalos en la otra app, confirma que están allá y entonces bórralos de aquí. ${S.repExp?"Última exportación: "+S.repExp+".":"Todavía no los has exportado."}</div><div class="row"><button class="p" data-a="rexp">⬇ Exportar para la app Reportes</button><button class="d" data-a="rdel">Borrar reportes viejos</button></div></div>`:""}
+  <div class="card"><b>Cargar respaldo de otro equipo</b><label>¿Cómo cargarlo?</label><select id="rmode"><option value="pick">Elegir qué agregar (sin borrar nada)</option><option value="merge">Combinar todo (sin borrar nada)</option><option value="replace">Reemplazar todo lo de este equipo</option></select><label>Escoge el archivo de respaldo (.json).</label><input type="file" data-a="restorefile"></div>`;
 }
 function vModal(){
   const m=V.modal;
@@ -365,7 +343,7 @@ function vModal(){
     colOpts=c=>P.tt?`<option value="skip" ${c.ch==="skip"?"selected":""}>🚫 No importar</option><option value="new" ${c.ch==="new"?"selected":""}>➕ Crear casilla nueva</option>${P.tt.fields.map(f=>`<option value="${f.id}" ${c.ch===f.id?"selected":""}>→ ${h(f.n)}</option>`).join("")}`:[["text","Texto"],["number","Número"],["qty","Cantidad (stock)"],["skip","🚫 No importar"]].map(x=>`<option value="${x[0]}" ${c.ch===x[0]?"selected":""}>${x[1]}</option>`).join("");
     return `<div class="modal"><div class="sheet"><h2>Importar Excel o CSV</h2><div class="mu">${h(m.fname)}</div>${m.sheets.length>1?`<label>Hoja</label><select data-m="si">${m.sheets.map((x,i)=>`<option value="${i}" ${(+m.si||0)===i?"selected":""}>${h(x.name)}</option>`).join("")}</select>`:""}<div style="margin-top:10px"><span class="chip" data-a="ihdr" style="${m.hdr?on:""}">Primera fila = títulos: ${m.hdr?"Sí":"No"}</span><span class="chip" data-a="idup" style="${m.dedupe!==false?on:""}">Evitar duplicados: ${m.dedupe!==false?"Sí":"No"}</span></div><label>¿A dónde van?</label><select data-m="dest"><option value="new" ${m.dest==="new"?"selected":""}>➕ Una lista nueva</option>${ordA(S.tpls).map(t=>`<option value="${t.id}" ${m.dest===t.id?"selected":""}>${h(gnm(t.gid))} › ${h(t.name)}</option>`).join("")}</select>${P.tt?"":`<label>Nombre de la lista</label><input data-m="name" value="${h(m.name)}"><label>Grupo</label><select data-m="gid">${gopts.map(g=>`<option value="${g[0]}" ${(m.gid||"")===g[0]?"selected":""}>${h(g[1])}</option>`).join("")}</select>`}<div class="card" style="margin-top:12px"><b>Columnas del archivo</b>${P.cols.map(c=>`<label>${h(c.title)} <span class="mu">· ej: ${h(c.sample||"vacío")}</span></label><select data-m="${P.tt?"cm_":"ct_"}${c.i}">${colOpts(c)}</select>`).join("")}</div><div class="mu" style="margin-top:10px">${P.data.length} fila(s) en el archivo${P.data.length>5000?" (se importan las primeras 5000)":""}.</div><div class="row" style="margin-top:14px"><button class="p sp" data-a="idoimp">Importar</button><button class="sp" data-a="closem">Cancelar</button></div></div></div>`}
   if(m.k==="pick"){const o=m.o,on=id=>m.sl[id]!==false,gs=[...(o.groups||[]).map(g=>[g.id,g.name,g.color||"#94A3B8"]),["","Sin grupo","#94A3B8"]],nrec=t=>((o.recs||{})[t.id]||[]).length,nph=(o.reps||[]).reduce((a,r)=>a+((r.photos||(r.photo?[r.photo]:[])).length),0),chip="border-color:var(--ac);color:var(--ac);font-weight:700";
-    return `<div class="modal"><div class="sheet"><h2>Elegir qué agregar</h2><div class="mu">Respaldo de la app v${h(o.ver||"?")}${o.saved?" · "+h(new Date(o.saved).toLocaleDateString("es-VE")):""}. Lo que marques se agrega a tu teléfono; no se borra nada de lo tuyo.</div><div class="row" style="margin-top:10px"><button class="s" data-a="pall">Marcar todo</button><button class="s" data-a="pnone">Quitar todo</button></div>${gs.map(g=>{const L=o.tpls.filter(t=>(t.gid||"")===g[0]);if(!L.length)return"";const all=L.every(t=>on(t.id));return `<div class="row" style="margin-top:14px"><b>${h(g[1])}</b><div class="sp"></div><button class="s" data-a="pg" data-id="${g[0]}">${all?"Quitar todas":"Todas"}</button></div>${L.map(t=>`<div class="card row" data-a="pl" data-id="${t.id}" style="cursor:pointer;border-left:6px solid ${g[2]};padding:12px"><span style="font-size:22px">${on(t.id)?"☑":"☐"}</span><div class="sp"><b>${h(t.name)}</b><div class="mu">${nrec(t)} registros</div></div></div>`).join("")}`}).join("")}<div style="margin-top:14px"><b>Otras cosas</b></div>${[["reps","Reportes",(o.reps||[]).length+" reportes"+(nph?" · "+nph+" fotos":"")],["moves","Movimientos entre grupos",(o.moves||[]).length+" movimientos"],["presets","Atajos",(o.presets||[]).length+" atajos"],["rtypes","Tipos de reporte",(o.rtypes||[]).length+" tipos"]].map(x=>`<div class="card row" data-a="px" data-k="${x[0]}" style="cursor:pointer;padding:12px;margin-top:8px"><span style="font-size:22px">${m.sx[x[0]]?"☑":"☐"}</span><div class="sp"><b>${x[1]}</b><div class="mu">${x[2]}</div></div></div>`).join("")}<div style="margin-top:12px"><span class="chip" data-a="pu" style="${m.union?chip:""}">Unir con lo mío si tiene el mismo nombre: ${m.union?"Sí":"No"}</span></div><div class="mu" style="margin-top:8px">Los registros iguales a los tuyos no se duplican; en listas con cantidad, si el artículo ya existe se respeta el tuyo. Las casillas que le falten a tu lista se le agregan.</div><div class="row" style="margin-top:14px"><button class="p sp" data-a="pickok">Agregar lo marcado</button><button class="sp" data-a="closem">Cancelar</button></div></div></div>`}
+    return `<div class="modal"><div class="sheet"><h2>Elegir qué agregar</h2><div class="mu">Respaldo de la app v${h(o.ver||"?")}${o.saved?" · "+h(new Date(o.saved).toLocaleDateString("es-VE")):""}. Lo que marques se agrega a tu teléfono; no se borra nada de lo tuyo.</div><div class="row" style="margin-top:10px"><button class="s" data-a="pall">Marcar todo</button><button class="s" data-a="pnone">Quitar todo</button></div>${gs.map(g=>{const L=o.tpls.filter(t=>(t.gid||"")===g[0]);if(!L.length)return"";const all=L.every(t=>on(t.id));return `<div class="row" style="margin-top:14px"><b>${h(g[1])}</b><div class="sp"></div><button class="s" data-a="pg" data-id="${g[0]}">${all?"Quitar todas":"Todas"}</button></div>${L.map(t=>`<div class="card row" data-a="pl" data-id="${t.id}" style="cursor:pointer;border-left:6px solid ${g[2]};padding:12px"><span style="font-size:22px">${on(t.id)?"☑":"☐"}</span><div class="sp"><b>${h(t.name)}</b><div class="mu">${nrec(t)} registros</div></div></div>`).join("")}`}).join("")}<div style="margin-top:14px"><b>Otras cosas</b></div>${[["moves","Movimientos entre grupos",(o.moves||[]).length+" movimientos"],["presets","Atajos",(o.presets||[]).length+" atajos"]].map(x=>`<div class="card row" data-a="px" data-k="${x[0]}" style="cursor:pointer;padding:12px;margin-top:8px"><span style="font-size:22px">${m.sx[x[0]]?"☑":"☐"}</span><div class="sp"><b>${x[1]}</b><div class="mu">${x[2]}</div></div></div>`).join("")}<div style="margin-top:12px"><span class="chip" data-a="pu" style="${m.union?chip:""}">Unir con lo mío si tiene el mismo nombre: ${m.union?"Sí":"No"}</span></div><div class="mu" style="margin-top:8px">Los registros iguales a los tuyos no se duplican; en listas con cantidad, si el artículo ya existe se respeta el tuyo. Las casillas que le falten a tu lista se le agregan.</div><div class="row" style="margin-top:14px"><button class="p sp" data-a="pickok">Agregar lo marcado</button><button class="sp" data-a="closem">Cancelar</button></div></div></div>`}
   if(m.k==="qty"){const tt=S.tpls.find(x=>x.id===m.tid),r=S.recs[tt.id].find(x=>x._id===m.rid);
     return `<div class="modal"><div class="sheet"><h2>Cambiar cantidad</h2><div class="mu">${h(itemDesc(tt,r))}</div><input data-m="val" type="number" inputmode="decimal" value="${h(m.val)}" style="font-size:24px;text-align:center;margin:12px 0"><div id="qsum" class="mu" style="text-align:center;margin-bottom:10px;min-height:20px">${qsum(m)}</div><div class="row">${[-5,-1,1,5].map(n=>`<button class="sp" data-a="qadd" data-n="${n}">${n>0?"+":""}${n}</button>`).join("")}</div><div class="row" style="margin-top:14px"><button class="p sp" data-a="qsave">✔ Confirmar cambio</button><button class="sp" data-a="closem">Cancelar</button></div></div></div>`}
   if(m.k==="mv"){const {tt,q,r,lopts,same,tl}=mvInfo(m),dt=tl&&tl!=="new"?S.tpls.find(x=>x.id===tl):null,srcOnly=dt?tt.fields.filter(f=>!dt.fields.some(d=>nm(d.n)===nm(f.n))):[],dstOnly=dt?dt.fields.filter(d=>!tt.fields.some(f=>nm(f.n)===nm(d.n))):[],gopts=[...ordA(S.groups).map(g=>[g.id,g.name]),["","Sin grupo"]];
@@ -384,25 +362,13 @@ function vModal(){
   <div class="row" style="margin-top:14px"><button class="p sp" data-a="saverec">Guardar</button>${m.rid?"":`<button data-a="saverec" data-more="1">Guardar y otro</button>`}<button data-a="closem">Cancelar</button></div></div></div>`;
 }
 
-function repText(r){return `*${r.type}*\n📅 ${r.date}`+(r.equipo?`\n🖥 Equipo: ${r.equipo}`:"")+`\n\n${r.desc}`}
-function curRep(){const d=V.draft;return{id:uid(),type:d.type||S.rtypes[0]||"Reporte",date:new Date().toLocaleString("es-VE",{dateStyle:"short",timeStyle:"short"}),equipo:S.upRep?d.equipo.trim().toUpperCase():d.equipo.trim(),desc:S.upRep?d.desc.trim().toUpperCase():d.desc.trim(),photos:[...d.photos],ts:Date.now()}}
-async function shareRep(r){
-  const text=repText(r);let files=[];
-  for(const [i,u] of ph(r).entries()){const b=await (await fetch(u)).blob();files.push(new File([b],"reporte"+(i+1)+".jpg",{type:"image/jpeg"}))}
-  try{
-    if(files.length&&navigator.canShare&&navigator.canShare({files})){await navigator.share({files,text});return}
-    if(navigator.share){await navigator.share({text});if(files.length)toast("Se compartió el texto; la foto adjúntala a mano");return}
-  }catch(e){if(e.name==="AbortError")return}
-  copyText(text,"No se pudo abrir compartir; copié el texto");
-}
 async function copyText(t,msg){try{await navigator.clipboard.writeText(t);toast(msg||"Copiado")}catch(e){const a=document.createElement("textarea");a.value=t;document.body.appendChild(a);a.select();try{document.execCommand("copy");toast(msg||"Copiado")}catch(x){toast("No pude copiar")}a.remove()}}
-function resize(file){return new Promise(res=>{const im=new Image();im.onload=()=>{const k=Math.min(1,900/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=im.width*k;c.height=im.height*k;c.getContext("2d").drawImage(im,0,0,c.width,c.height);res(c.toDataURL("image/jpeg",.7))};im.src=URL.createObjectURL(file)})}
-const cfgObj=()=>({app:"invrep",tpls:S.tpls,groups:S.groups,presets:S.presets,rtypes:S.rtypes});
+const cfgObj=()=>({app:"invrep",tpls:S.tpls,groups:S.groups,presets:S.presets});
 function importCfg(txt){
   try{const o=JSON.parse(txt);if(!o||!Array.isArray(o.tpls))throw 0;
     let n=0;o.tpls.forEach(t=>{if(!S.tpls.some(x=>x.id===t.id)){S.tpls.push(t);n++}});
-    (o.rtypes||[]).forEach(t=>{if(!S.rtypes.includes(t))S.rtypes.push(t)});(o.groups||[]).forEach(g=>{if(!S.groups.some(x=>x.id===g.id))S.groups.push(g)});(o.presets||[]).forEach(p=>{if(!S.presets.some(x=>x.id===p.id||x.name===p.name))S.presets.push(p)});
-    if(o.recs){Object.keys(o.recs).forEach(k=>{if(!S.recs[k])S.recs[k]=o.recs[k]});(o.reps||[]).forEach(r=>{if(!S.reps.some(x=>x.id===r.id))S.reps.push(r)})}
+    (o.groups||[]).forEach(g=>{if(!S.groups.some(x=>x.id===g.id))S.groups.push(g)});(o.presets||[]).forEach(p=>{if(!S.presets.some(x=>x.id===p.id||x.name===p.name))S.presets.push(p)});
+    if(o.recs){Object.keys(o.recs).forEach(k=>{if(!S.recs[k])S.recs[k]=o.recs[k]})}
     save();render();toast(n+" lista(s) nueva(s) importada(s)")}
   catch(e){toast("Ese código no parece válido")}
 }
@@ -411,25 +377,23 @@ function mergeAll(o){
   let nt=0,nr=0,np=0;
   o.tpls.forEach(t=>{if(!S.tpls.some(x=>x.id===t.id)){S.tpls.push(t);nt++}});
   Object.keys(o.recs||{}).forEach(k=>{const cur=S.recs[k]=S.recs[k]||[];(o.recs[k]||[]).forEach(r=>{if(!cur.some(x=>x._id===r._id)){cur.push(r);nr++}})});
-  (o.rtypes||[]).forEach(t=>{if(!S.rtypes.includes(t))S.rtypes.push(t)});(o.groups||[]).forEach(g=>{if(!S.groups.some(x=>x.id===g.id))S.groups.push(g)});(o.presets||[]).forEach(p=>{if(!S.presets.some(x=>x.id===p.id||x.name===p.name))S.presets.push(p)});
-  (o.reps||[]).forEach(r=>{if(!S.reps.some(x=>x.id===r.id)){S.reps.push(r);np++}});(o.moves||[]).forEach(x=>{if(!S.moves.some(y=>y.id===x.id))S.moves.push(x)});
-  return nt+" listas, "+nr+" registros y "+np+" reportes nuevos";
+  (o.groups||[]).forEach(g=>{if(!S.groups.some(x=>x.id===g.id))S.groups.push(g)});(o.presets||[]).forEach(p=>{if(!S.presets.some(x=>x.id===p.id||x.name===p.name))S.presets.push(p)});
+  (o.moves||[]).forEach(x=>{if(!S.moves.some(y=>y.id===x.id))S.moves.push(x)});
+  return nt+" listas y "+nr+" registros nuevos";
 }
 function restoreAll(txt){
   const mode=($("#rmode")||{}).value||"merge";
   try{const o=JSON.parse(txt);if(!o||o.app!=="invrep"||!Array.isArray(o.tpls))throw 0;
-    if(mode==="pick"){V.modal={k:"pick",o,sl:{},sx:{reps:true,moves:true,presets:true,rtypes:true},union:true};render();return}
+    if(mode==="pick"){V.modal={k:"pick",o,sl:{},sx:{moves:true,presets:true},union:true};render();return}
     let msg;
     if(mode==="replace"){
-      ask("Esto reemplaza TODO lo que hay en este equipo con el respaldo. ¿Continuar?",()=>{S=Object.assign(JSON.parse(JSON.stringify(DEF)),{tpls:o.tpls,recs:o.recs||{},rtypes:o.rtypes||DEF.rtypes,reps:o.reps||[],groups:o.groups||[],presets:o.presets||S.presets,moves:o.moves||[],lastBackup:S.lastBackup,theme:S.theme,upInv:S.upInv,upRep:S.upRep,ord:S.ord,cfq:S.cfq,srch:S.srch});V.draft.type=S.rtypes[0]||"";save();toast("Respaldo cargado")});render();return;
+      ask("Esto reemplaza TODO lo que hay en este equipo con el respaldo. ¿Continuar?",()=>{S=Object.assign(JSON.parse(JSON.stringify(DEF)),{tpls:o.tpls,recs:o.recs||{},rtypes:o.rtypes||DEF.rtypes,reps:o.reps||[],groups:o.groups||[],presets:o.presets||S.presets,moves:o.moves||[],lastBackup:S.lastBackup,theme:S.theme,upInv:S.upInv,upRep:S.upRep,ord:S.ord,cfq:S.cfq,srch:S.srch});save();toast("Respaldo cargado")});render();return;
     }else msg="Agregado: "+mergeAll(o);
-    V.draft.type=S.rtypes.includes(V.draft.type)?V.draft.type:(S.rtypes[0]||"");
     if(save()){render();toast(msg)}}
   catch(e){toast("Ese archivo no es un respaldo válido")}
 }
 document.addEventListener("input",e=>{
   const t=e.target,m=V.modal;
-  if(t.dataset.d)V.draft[t.dataset.d]=t.value;
   if(m&&(m.k==="tpl"||m.k==="grp"||m.k==="mv"||m.k==="cf"||m.k==="qty"||m.k==="xsel"||m.k==="l2p"||m.k==="imp")){if(t.dataset.m){m[t.dataset.m]=t.value;if(m.k==="imp"&&(t.dataset.m==="si"||t.dataset.m==="dest")){Object.keys(m).filter(k=>/^c[tm]_/.test(k)).forEach(k=>delete m[k]);render()}if(m.k==="qty"){const e=$("#qsum");if(e)e.textContent=qsum(m)}if(m.k==="mv"&&(t.dataset.m==="to"||t.dataset.m==="tl")){Object.keys(m).filter(k=>k.startsWith("fm_")).forEach(k=>delete m[k]);if(t.dataset.m==="to")m.tl="";render()}}if(t.dataset.fi!==undefined){const f=m.fields[t.dataset.fi];f[t.dataset.p]=t.value;if(t.dataset.p==="t")render()}}
 });
 document.addEventListener("change",async e=>{
@@ -438,8 +402,6 @@ document.addEventListener("change",async e=>{
   if(a==="sortf"){const tt=S.tpls.find(x=>x.id===V.tpl);tt.sortF=t.value;save();render();return}
   if(a==="ord"){S.ord=t.value;save();render();return}
   if(a==="mfo"||a==="mfd"){V[a]=t.value;render();return}
-  if(a==="filt"){V.filter=t.value;render();return}
-  if(a==="photo"&&t.files.length){for(const f of [...t.files]){if(V.draft.photos.length>=5){toast("Máximo 5 fotos por reporte");break}V.draft.photos.push(await resize(f))}render()}
   if(a==="impfile"&&t.files[0]){importCfg(await t.files[0].text())}
   if(a==="restorefile"&&t.files[0]){restoreAll(await t.files[0].text());t.value=""}
 });
@@ -572,30 +534,15 @@ document.addEventListener("click",async e=>{
     const fs=m.fields.filter(f=>f.n.trim()).map(f=>({n:f.n.trim(),t:f.t,o:f.o||""}));
     if(!m.name.trim()||!fs.length){toast("Ponle nombre y al menos un campo");return}
     S.presets.push({id:uid(),name:m.name.trim(),fields:fs});save();toast("Atajo guardado");return}
-  else if(a==="share"){const r=curRep();if(!r.desc&&!r.photos.length){toast("Agrega foto o descripción");return}shareRep(r);return}
-  else if(a==="copy"){const r=curRep();if(!r.desc){toast("Falta la descripción");return}copyText(repText(r));return}
-  else if(a==="saverep"){const r=curRep();if(!r.desc&&!r.photos.length){toast("Agrega foto o descripción");return}S.reps.push(r);if(save()){V.draft={type:r.type,photos:[],desc:"",equipo:""};toast("Guardado en el historial")}else S.reps.pop()}
-  else if(a==="clrdraft")V.draft={type:V.draft.type,photos:[],desc:"",equipo:""};
-  else if(a==="cam"){$("#fcam").click();return}
-  else if(a==="gal"){$("#fgal").click();return}
-  else if(a==="rmph")V.draft.photos.splice(+el.dataset.i,1);
-  else if(a==="delph"){
-    const days=+$("#pdays").value,cut=Date.now()-days*864e5;
-    ask("¿Borrar las fotos de reportes con más de "+days+" días? El texto de los reportes se queda.",()=>{let n=0;S.reps.forEach(r=>{const t=repTime(r);if(t&&t<cut&&ph(r).length){n+=ph(r).length;r.fotosBorradas=(r.fotosBorradas||0)+ph(r).length;r.photos=[];delete r.photo}});save();toast(n+" foto(s) borrada(s)")})}
-  else if(a==="delphall"){ask("¿Borrar TODAS las fotos de los reportes? El texto se queda.",()=>{let n=0;S.reps.forEach(r=>{if(ph(r).length){n+=ph(r).length;r.fotosBorradas=(r.fotosBorradas||0)+ph(r).length;r.photos=[];delete r.photo}});save();toast(n+" foto(s) borrada(s)")})}
-  else if(a==="resend"){shareRep(S.reps.find(r=>r.id===id));return}
-  else if(a==="delrep"){S.reps=S.reps.filter(r=>r.id!==id);save()}
-  else if(a==="addtype"){const v=$("#nt").value.trim();if(v&&!S.rtypes.includes(v)){S.rtypes.push(v);save()}}
-  else if(a==="deltype"){S.rtypes.splice(+el.dataset.i,1);save()}
+  else if(a==="rexp"){dl("reportes-"+ymd()+".json",new Blob([JSON.stringify({app:"invrep-rep",ver:VERSION,saved:new Date().toISOString(),rtypes:S.rtypes,reps:S.reps})],{type:"application/json"}));S.repExp=ymd();save()}
+  else if(a==="rdel")ask(S.repExp?"¿Ya cargaste los reportes en la app «Reportes»? Los vas a borrar de aquí.":"Todavía no has exportado estos reportes desde aquí. ¿Seguro que quieres borrarlos?",()=>{ask("Última verificación: esto no se puede deshacer. Escribe BORRAR para confirmar.",()=>{S.reps=[];S.repExp="";save();toast("Reportes viejos borrados")},"BORRAR")});
   else if(a==="expcfg"){dl("plantillas.json",new Blob([JSON.stringify(cfgObj(),null,1)],{type:"application/json"}));return}
   else if(a==="copycfg"){copyText(JSON.stringify(cfgObj()),"Código copiado; pégalo en el otro equipo");return}
   else if(a==="impTxt"){importCfg($("#imp").value);return}
-  else if(a==="expall")doBackup(true);
-  else if(a==="expnp"||a==="bkp")doBackup(false);
+  else if(a==="expall"||a==="expnp"||a==="bkp")doBackup();
   else if(a==="snooze"){S.snooze=ymd();save()}
   render();
 });
-if(!S.rtypes.includes(V.draft.type))V.draft.type=S.rtypes[0]||"";
 $("#ver").textContent="v"+VERSION;applyTheme();
 render();
 if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});

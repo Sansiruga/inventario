@@ -1,4 +1,4 @@
-const C="invrep-1.13.1",XL="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js";
+const C="invrep-2.0.0",XL="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js";
 const REQ=["./","index.html"],OPT=["visor.html","manifest.webmanifest","icon-192.png","icon-512.png"];
 self.addEventListener("install",e=>{e.waitUntil((async()=>{
   const c=await caches.open(C);
